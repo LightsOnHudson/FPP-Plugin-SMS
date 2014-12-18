@@ -1,0 +1,4 @@
+#
+# To randomize your playlist every 50 minutes?
+#
+*/50 * * * * /usr/bin/php /opt/fpp/plugins/RadioStation/randomizer.php
