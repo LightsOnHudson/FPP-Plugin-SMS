@@ -18,7 +18,6 @@ function logEntry($data) {
 function processCallback($argv) {
 	global $DEBUG,$pluginName;
 	
-	$SEPARATOR = urldecode(ReadSettingFromFile("SEPARATOR",$pluginName));
 	
 	if($DEBUG)
 		print_r($argv);
@@ -101,23 +100,4 @@ function processCallback($argv) {
 }
 
 
-//function send the message
-
-function sendMessage($songTitle,$songArtist) {
-
-	global $STATION_ID,$RT_TEXT_PATH;
-	
-
-	//logEntry("reading config file");
-	logEntry("Station_ID: ".$STATION_ID." RT TEXT PATH: ".$RT_TEXT_PATH);
-
-	$f = fopen($RT_TEXT_PATH."PS_TEXT.txt", "w");
-	fwrite($f, $STATION_ID);
-	fclose($f);
-
-	$f = fopen($RT_TEXT_PATH."RT_TEXT.txt", "w");
-	fwrite($f, $songTitle." - ".$songArtist);
-	fclose($f);
-
-}
 ?>

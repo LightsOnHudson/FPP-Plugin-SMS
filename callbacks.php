@@ -7,7 +7,7 @@ include_once '/opt/fpp/www/config.php';
 include_once '/opt/fpp/www/common.php';
 
 include_once "functions.inc.php";
-$pluginName = "miniRDSText";
+$pluginName = "SMS";
 
 
 $myPid = getmypid();
@@ -29,11 +29,8 @@ if($ENABLED != "on" && $ENABLED != "1") {
 	exit(0);
 }
 
-
-$STATION_ID=urldecode(ReadSettingFromFile("STATION_ID",$pluginName));
-$RT_TEXT_PATH=urldecode(ReadSettingFromFile("RT_TEXT_PATH",$pluginName));
-
-$callbackRegisters = "media\n";
+//none at this time
+$callbackRegisters = "";
 //var_dump($argv);
 
 $FPPD_COMMAND = $argv[1];
