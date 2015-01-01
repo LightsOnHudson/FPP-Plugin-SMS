@@ -1,5 +1,4 @@
 <?php
-
 class GoogleVoice {
 	// Google account credentials.
 	private $_login;
@@ -417,4 +416,3 @@ class GoogleVoice {
 }
 
 ?>
-

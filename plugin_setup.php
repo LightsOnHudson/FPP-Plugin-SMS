@@ -4,14 +4,9 @@
 include_once "/opt/fpp/www/common.php";
 include_once "functions.inc.php";
 $pluginName = "SMS";
-$OPEN="";
-$CLOSE="";
-$ANNOUNCE_1="";
-$ANNOUNCE_2="";
-$ANNOUNCE_3="";
-$RANDOM="";
+
 $PLAYLIST_NAME="";
-$MAJOR = $pluginName;
+$MAJOR = "98";
 $MINOR = "01";
 $eventExtension = ".fevt";
 //arg0 is  the program
@@ -19,64 +14,70 @@ $eventExtension = ".fevt";
 //$DEBUG=true;
 
 $SMSEventFile = $eventDirectory."/".$MAJOR."_".$MINOR.$eventExtension;
-
-
-
+$SMSGETScriptFilename = $scriptDirectory."/".$pluginName."_GET.sh";
 
 $logFile = $settings['logDirectory']."/".$pluginName.".log";
+
+
+createSMSSequenceFiles();
 
 
 if(isset($_POST['submit']))
 {
 	
-	//$PLAYLIST_NAME = preg_replace('/\s+/', '', $_POST["PLAYLIST_NAME"]);
-	$PLAYLIST_NAME = urlencode($_POST["PLAYLIST_NAME"]);
 
-    WriteSettingToFile("ENABLED",$_POST["ENABLED"],$pluginName);
- 
-    WriteSettingToFile("RANDOM",trim($_POST["RANDOM"]),$pluginName);
-    WriteSettingToFile("PREFIX",trim($_POST["PREFIX"]),$pluginName);
-    
-    
-  //  $cronCmd = "*/5 * * * * /home/ramesh/backup.sh";
-    	
-  //  $addToCronCmd = "echo ".$cronCmd." >> "
-  
-    //run the randomizer
+
+//	echo "Writring config fie <br/> \n";
+	WriteSettingToFile("EMAIL",urlencode($_POST["EMAIL"]),$pluginName);
+	WriteSettingToFile("PASSWORD",urlencode($_POST["PASSWORD"]),$pluginName);
+	WriteSettingToFile("PLAYLIST_NAME",urlencode($_POST["PLAYLIST_NAME"]),$pluginName);
+	WriteSettingToFile("WHITELIST_NUMBERS",urlencode($_POST["WHITELIST_NUMBERS"]),$pluginName);
+	WriteSettingToFile("CONTROL_NUMBERS",urlencode($_POST["CONTROL_NUMBERS"]),$pluginName);
+	WriteSettingToFile("REPLY_TEXT",urlencode($_POST["REPLY_TEXT"]),$pluginName);
+	WriteSettingToFile("VALID_COMMANDS",urlencode($_POST["VALID_COMMANDS"]),$pluginName);
+	WriteSettingToFile("ENABLED",urlencode($_POST["ENABLED"]),$pluginName);
+
 
 }
-	
 
-	//load the file settings using the library scrubfile
 	
-
 	$PLAYLIST_NAME = urldecode(ReadSettingFromFile("PLAYLIST_NAME",$pluginName));
+	$WHITELIST_NUMBERS = urldecode(ReadSettingFromFile("WHITELIST_NUMBERS",$pluginName));
+	$CONTROL_NUMBERS = urldecode(ReadSettingFromFile("CONTROL_NUMBERS",$pluginName));
+	$REPLY_TEXT = urldecode(ReadSettingFromFile("REPLY_TEXT",$pluginName));
+	$VALID_COMMANDS = urldecode(ReadSettingFromFile("VALID_COMMANDS",$pluginName));
+	$EMAIL = urldecode(ReadSettingFromFile("EMAIL",$pluginName));
+	$PASSWORD = urldecode(ReadSettingFromFile("PASSWORD",$pluginName));
+	
+	$ENABLED = urldecode(ReadSettingFromFile("ENABLED",$pluginName));
 
-	$ENABLED = ReadSettingFromFile("ENABLED",$pluginName);
+if($VALID_COMMANDS == "") {
 
-
+	//populate with default valid commands
+	$VALID_COMMANDS = "play,stop,repeat,status";
+}
 	
 	//crate the event file
 	function createSMSEventFile() {
 		
-		global $SMSEventFile,$pluginName,$MAJOR,$MINOR;
+		global $SMSEventFile,$pluginName,$MAJOR,$MINOR,$SMSGETScriptFilename;
 		
 		
-		logEntry("Creating Randomizer event file: ".$radioStationRandomizerEventFile);
+		logEntry("Creating  event file: ".$SMSEventFile);
 		
 		$data = "";
 		$data .= "majorID=".$MAJOR."\n";
 		$data .= "minorID=".$MINOR."\n";
 		
-		$data .= "name='".$radioStationRadomizerEventName."'\n";
+		$data .= "name='".$pluginName."_GET"."'\n";
 			
 		$data .= "effect=''\n";
 		$data .="startChannel=\n";
-		$data .= "script='".pathinfo($radioStationRepeatScriptFile,PATHINFO_BASENAME)."'\n";
+		$data .= "script='".pathinfo($SMSGETScriptFilename,PATHINFO_BASENAME)."'\n";
 		
 		
 		
-		$fs = fopen($radioStationRandomizerEventFile,"w");
+		$fs = fopen($SMSEventFile,"w");
 		fputs($fs, $data);
 		fclose($fs);
 	}
@@ -98,7 +99,8 @@ if(isset($_POST['submit']))
 
 <p>Configuration:
 <ul>
-<li>Configure /ul>
+<li>Configure </li>
+</ul>
 
 
 <form method="post" action="http://<? echo $_SERVER['SERVER_NAME']?>/plugin.php?plugin=<?echo $pluginName;?>&page=plugin_setup.php">
@@ -111,7 +113,7 @@ $reboot=0;
 
 echo "ENABLE PLUGIN: ";
 
-if($ENABLED== 1 ) {
+if($ENABLED== 1 || $ENABLED == "on") {
 		echo "<input type=\"checkbox\" checked name=\"ENABLED\"> \n";
 //PrintSettingCheckbox("Radio Station", "ENABLED", $restart = 0, $reboot = 0, "ON", "OFF", $pluginName = $pluginName, $callbackName = "");
 	} else {
@@ -124,9 +126,27 @@ if($ENABLED== 1 ) {
 echo "<p/> \n";
 
 echo "Playlist Name: ";
+PrintMediaOptions();
 
-echo "<input type=\"text\" name=\"PLAYLIST_NAME\" size=\"32\" value=\"".$PLAYLIST_NAME."\"> \n";
+ function PrintMediaOptions()
+  {
+	  global $playlistDirectory;
+
+		echo "<select name=\"PLAYLIST_NAME\">";
+
+	$playlistEntries = scandir($playlistDirectory);
+	sort($playlistEntries);
 	
+    foreach($playlistEntries as $playlist) 
+    {
+      if($playlist != '.' && $playlist != '..')
+      {
+        echo "<option value=\"" . $playlist . "\">" . $playlist . "</option>";
+      }
+	}
+  echo "</select>";
+  }
+
 echo "<p/> \n";
 
 echo "Email Address: \n";
@@ -139,6 +159,31 @@ echo "Password: \n";
 
 echo "<input type=\"password\" name=\"PASSWORD\" size=\"16\" value=\"".$PASSWORD."\"> \n";
 
+
+echo "<p/> \n";
+
+echo "Valid Commands: \n";
+
+echo "<input type=\"text\" name=\"VALID_COMMANDS\" size=\"16\" value=\"".$VALID_COMMANDS."\"> \n";
+
+
+echo "<p/> \n";
+
+echo "Reply Text: \n";
+
+echo "<input type=\"text\" name=\"REPLY_TEXT\" size=\"64\" value=\"".$REPLY_TEXT."\"> \n";
+echo "<p/> \n";
+
+echo "White List Numbers(comma separated): \n";
+
+echo "<input type=\"text\" name=\"WHITELIST_NUMBERS\" size=\"64\" value=\"".$WHITELIST_NUMBERS."\"> \n";
+
+
+echo "<p/> \n";
+
+echo "CONTROL NUMBER: \n";
+
+echo "<input type=\"text\" name=\"CONTROL_NUMBERS\" size=\"16\" value=\"".$CONTROL_NUMBERS."\"> \n";
 
 ?>
 <p/>
