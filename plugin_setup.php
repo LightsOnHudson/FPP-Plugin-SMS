@@ -94,12 +94,26 @@ if($VALID_COMMANDS == "") {
 
 <p>Known Issues:
 <ul>
-<li>NONE </li>
+<li>the fpp daemon doesn't return an active playlist if the command is currently loading a function (i.e. starting a playlist or transitioning to events</li>
+<li>Thus you may get a No playlist active at this time</li>
 </ul>
 
 <p>Configuration:
 <ul>
-<li>Configure </li>
+<li>Configure your whitelist of numbers, and your control number</li>
+<li>Your control numbers, and white list numbers should be comma separated</li>
+<li>Control numbers can send valid commands to be processed</li>
+<li>ALL control numbers will get status commands when including the SMS-STATUS-SEND.FSEQ sequence in a playlist</li>
+</ul>
+<ul>
+<li>Add the crontabAdd options to your crontab to have the sms run every X minutes to process commands</li>
+<li>The Writeplaylist script writes the current running playlist (if any) to a tmp file on /tmp</li>
+</ul>
+
+<p>DISCLAIMER:
+<ul>
+<li>The Author and supporters of this plugin are NOT responsible for SMS charges that may be incurred by using this plugin</li>
+<li>Check with your mobile provider BEFORE using this to ensure your account status</li>
 </ul>
 
 
