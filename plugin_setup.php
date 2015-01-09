@@ -36,7 +36,7 @@ if(isset($_POST['submit']))
 	WriteSettingToFile("REPLY_TEXT",urlencode($_POST["REPLY_TEXT"]),$pluginName);
 	WriteSettingToFile("VALID_COMMANDS",urlencode($_POST["VALID_COMMANDS"]),$pluginName);
 	WriteSettingToFile("ENABLED",urlencode($_POST["ENABLED"]),$pluginName);
-
+	WriteSettingToFile("LAST_READ",urlencode($_POST["LAST_READ"]),$pluginName);
 
 }
 
@@ -48,9 +48,13 @@ if(isset($_POST['submit']))
 	$VALID_COMMANDS = urldecode(ReadSettingFromFile("VALID_COMMANDS",$pluginName));
 	$EMAIL = urldecode(ReadSettingFromFile("EMAIL",$pluginName));
 	$PASSWORD = urldecode(ReadSettingFromFile("PASSWORD",$pluginName));
+	$LAST_READ = urldecode(ReadSettingFromFile("LAST_READ",$pluginName));
 	
 	$ENABLED = urldecode(ReadSettingFromFile("ENABLED",$pluginName));
 
+if($REPLY_TEXT == "") {
+	$REPLY_TEXT = "Thank you for your message, it has been added to the Queue";
+}
 if($VALID_COMMANDS == "") {
 
 	//populate with default valid commands
@@ -80,6 +84,10 @@ if($VALID_COMMANDS == "") {
 		$fs = fopen($SMSEventFile,"w");
 		fputs($fs, $data);
 		fclose($fs);
+	}
+	
+	if((int)$LAST_READ == 0 || $LAST_READ == "") {
+		$LAST_READ=0;
 	}
 
 ?>
@@ -121,6 +129,10 @@ if($VALID_COMMANDS == "") {
 
 
 <?
+//will add a 'reset' to this later
+
+echo "<input type=\"hidden\" name=\"LAST_READ\" value=\"".$LAST_READ."\"> \n";
+
 
 $restart=0;
 $reboot=0;

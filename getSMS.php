@@ -3,6 +3,10 @@
 //error_reporting(0);
 
 $pluginName ="SMS";
+$myPid = getmypid();
+
+$messageQueue_Plugin = "MessageQueue";
+$MESSAGE_QUEUE_PLUGIN_ENABLED=false;
 
 $DEBUG=false;
 
@@ -11,11 +15,26 @@ include_once("/opt/fpp/www/config.php");
 include_once("/opt/fpp/www/common.php");
 include_once("functions.inc.php");
 include_once ("GoogleVoice.php");
+
+$logFile = $settings['logDirectory']."/".$pluginName.".log";
+
+$messageQueuePluginPath = $pluginDirectory."/".$messageQueue_Plugin."/";
+
+$messageQueueFile = urldecode(ReadSettingFromFile("MESSAGE_FILE",$messageQueue_Plugin));
+
+if(file_exists($messageQueuePluginPath."functions.inc.php"))
+	{
+		include $messageQueuePluginPath."functions.inc.php";
+		$MESSAGE_QUEUE_PLUGIN_ENABLED=true;
+
+	} else {
+		logEntry("Message Queue Plugin not installed, some features will be disabled");
+	}	
+
 require ("lock.helper.php");
 
 define('LOCK_DIR', '/tmp/');
 define('LOCK_SUFFIX', '.lock');
-
 
 $EMAIL = urldecode(ReadSettingFromFile("EMAIL",$pluginName));
 $PASSWORD = urldecode(ReadSettingFromFile("PASSWORD",$pluginName));
@@ -28,6 +47,9 @@ $VALID_COMMANDS = urldecode(ReadSettingFromFile("VALID_COMMANDS",$pluginName));
 $COMMAND_ARRAY = explode(",",trim(strtoupper($VALID_COMMANDS)));
 $CONTROL_NUMBER_ARRAY = explode(",",$CONTROL_NUMBERS);
 
+
+$WHITELIST_NUMBER_ARRAY = explode(",",$WHITELIST_NUMBERS);
+
 $logFile = $settings['logDirectory']."/".$pluginName.".log";
 if($DEBUG)
 print_r($COMMAND_ARRAY);
@@ -39,7 +61,6 @@ $ENABLED="";
 
 $ENABLED = trim(urldecode(ReadSettingFromFile("ENABLED",$pluginName)));
 
-$myPid = getmypid();
 
 
 if(($pid = lockHelper::lock()) === FALSE) {
@@ -86,122 +107,98 @@ if($DEBUG)
 
 //process the message queue or exit
 //check to see if the request is in the valid commands
+logEntry("Messages to process qyt: ".count($messageQueue));
 
 for($i=0;$i<=count($messageQueue)-1;$i++) {
-	
+	//prevent messages to get entered more than once if in control and whitelist array
+	$MESSAGE_USED=false;	
 	$from = $messageQueue[$i][0];
 	$messageText = $messageQueue[$i][1];
 	
 	logEntry("processing message: ".$i." from: ".$from." Message: ".$messageText);
+
+                $messageText= preg_replace('/\s+/', ' ', $messageText);
+                $messageParts = explode(" ",$messageText);
 	
 	if(in_array($from,$CONTROL_NUMBER_ARRAY))
 	{
+		///message used is to make sure that we do not process a message twice if it is from a number that is both a whitelist AND control numbers
+		$MESSAGE_USED=true;
 		logEntry("Control number found: ".$from);
 		//process the command see if it is in the valid commands
 	
 		//see if they sent in a playlist name???
 		//that would mean there is a space in the command.
-		$messageText= preg_replace('/\s+/', ' ', $messageText);
-		$messageParts = explode(" ",$messageText);
 
-		if(count($messageParts) > 1) {
-			logEntry("We got a command with playlist");
-			logEntry("Command: ".$messageParts[0]);
-			logEntry("playlist: ".$messageParts[1]);
-		}
+		//if(count($messageParts) > 1) {
+		//	logEntry("did we get a command with playlist");
+		//	logEntry("Command: ".$messageParts[0]);
+		//	logEntry("playlist: ".$messageParts[1]);
+		//}
 	
 		if(in_array(trim(strtoupper($messageParts[0])),$COMMAND_ARRAY)) {
 			logEntry("Command request: ".$messageText. " in uppercase is in control array");
-			processSMSCommand($from,$messageParts[0],$messageParts[1]);
+			//do we have a playlist name?
+			if($messageParts[1] != "") {
+
+				processSMSCommand($from,$messageParts[0],$messageParts[1]);
+			} else {
+				
+				//play the configured playlist@!!!! from the plugin
+				processSMSCommand($from,$messageParts[0],$PLAYLIST_NAME);
+			}
 			
 		} else {
-			logEntry($messageText. " is not in the control array: processing as regular message");
-		}
-	}
-}
-
-function processSMSCommand($from,$SMSCommand,$playlistName="") {
-	
-	global $gv,$DEBUG,$PLAYLIST_NAME;
-	$FPPDStatus=false;
-	$output="";
-
-	if($playlistName != "") {
-		$PLAYLIST_NAME = $playlistName;
-	} else {
-		logEntry("No playlist name specified, using Plugin defined playlist: ".$PLAYLIST_NAME);
-	}
-
-	logEntry("Processing command: ".$SMSCommand." for playlist: ".$PLAYLIST_NAME);
-	
-	$FPPDStatus = isFPPDRunning();
-		
-	logEntry("FPPD status: ".$FPPDStatus);
-	if($FPPDStatus != "RUNNING") {
-		logEntry("FPPD NOT RUNNING: Sending message to : ".$from. " that FPPD status: ".$FPPDStatus);
-		//send a message that the daemon is not running and cannot execute the command
-		$gv->sendSMS($from, "FPPD is not running, cannot execute cmd: ".$SMSCommand);
-		sleep(1);	
-		processReadSentMessages();
-		return;
-	} else {
-		logEntry("Sending message to : ".$from. " that FPPD status: ".$FPPDStatus);
-		$gv->sendSMS($from,"FPPD is running, I will execute command: ".$SMSCommand);
-		sleep(1);
-		//if sending a message.. need to clear it as it may hose up the next queue of messages
-		processReadSentMessages();
-	}
-	
-	$cmd = "/opt/fpp/bin/fpp ";
-	
-	switch (strtoupper($SMSCommand)) {
-		
-		
-		case "PLAY":
-		
-			 $cmd .= "-P \"".$PLAYLIST_NAME."\"";
-		
-			break;
-		
-		
-		case "STOP":
-			
-			$cmd .= "-c stop";
-			
-			break;
-			
-		case "REPEAT":
-			
-			$cmd .= "-p \"".$PLAYLIST_NAME."\"";
-			break;
-		
-		case "STATUS":
-			$playlistName = getRunningPlaylist();
-			if($playlistName == null) {
-				$playlistName = " No current playlist active or FPPD starting, please try your command again in a few";
-			}
-			logEntry("Sending SMS to : ".$from. " playlist: ".$playlistName);
-			$gv->sendSMS($from,"Playlist STATUS: ".$playlistName);
-			break;
+				//generic message to display from control number just like a regular user
+				processSMSMessage($from,$messageText);
+				$gv->sendSMS($from,$REPLY_TEXT);
+				sleep(1);
 				
-		default:
+				processReadSentMessages();
+			}
 			
-			$cmd = "";
-			break;
-			
-		
-			
-	}
+		} 
 	
-	if($cmd !="" ) {
-		logEntry("Execugint sms command: ".$cmd);
-		exec($cmd,$output);
-		//system($cmd,$output);
-		
+	if(in_array($from,$WHITELIST_NUMBER_ARRAY) && !$MESSAGE_USED) 
+
+			{
+				$MESSAGE_USED=true;	
+				logEntry($messageText. " is from a white listed number");
+				processSMSMessage($from,$messageText);
+				$gv->sendSMS($from,$REPLY_TEXT);
+				//$gv->sendSMS($from,"Thank you for your message, it will be addedd to the queue: WHITELIST");
+				sleep(1);
+				processReadSentMessages();
+
+	} else if(!$MESSAGE_USED){
+
+				//not from a white listed or a control number so just a regular user
+				//need to check for profanity
+
+				$profanityCheck = profanityChecker($messageText);
+				if(!$profanityCheck) {
+
+					logEntry("Message: ".$messageText. " PASSED");
+					$gv->sendSMS($from,$REPLY_TEXT);
+					//$gv->sendSMS($from,"Thank you for your message, it has been added to the queue");
+					processSMSMessage($from,$messageText);
+					sleep(1);	
+					processReadSentMessages();	
+
+				} else {
+					logEntry("message: ".$messageText." FAILED");
+					$gv->sendSMS($from,"Your message contains profanity, sorry");
+					sleep(1);
+					processReadSentMessages();
+
+				}
 	}
-logEntry("Processing command: ".$cmd);	
+
+
+		}
 	
-}
+
+
 lockHelper::unlock();
 
 ?>

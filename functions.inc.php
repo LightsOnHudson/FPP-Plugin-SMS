@@ -1,5 +1,105 @@
 <?php
 
+function processSMSMessage($from,$messageText) {
+        global $pluginName,$MESSAGE_QUEUE_PLUGIN_ENABLED;
+
+
+      //  logEntry("Adding message from: ".$from. ": ".$messageText. " to message queue");
+        if($MESSAGE_QUEUE_PLUGIN_ENABLED) {
+                addNewMessage($messageText,$pluginName,$from);
+        } else {
+                logEntry("MessageQueue plugin is not enabled/installed: Cannot add message: ".$messageText);
+        }
+
+        return;
+
+
+}
+function profanityChecker($messageText) {
+
+        $profanityCheck = false;
+
+        logEntry("Checking:  ".$messageText." for profanity");
+
+        return $profanityCheck;
+
+}
+
+//process the SMS commnadn coming in from a control number
+function processSMSCommand($from,$SMSCommand="",$playlistName="") {
+
+        global $gv,$DEBUG;
+        $FPPDStatus=false;
+        $output="";
+
+
+     //   if($playlistName != "") {
+                $PLAYLIST_NAME = trim($playlistName);
+      //  } else {
+     //           logEntry("No playlist name specified, using Plugin defined playlist: ".$PLAYLIST_NAME);
+     //   }
+
+        logEntry("Processing command: ".$SMSCommand." for playlist: ".$PLAYLIST_NAME);
+
+        $FPPDStatus = isFPPDRunning();
+
+        logEntry("FPPD status: ".$FPPDStatus);
+        if($FPPDStatus != "RUNNING") {
+                logEntry("FPPD NOT RUNNING: Sending message to : ".$from. " that FPPD status: ".$FPPDStatus);
+                //send a message that the daemon is not running and cannot execute the command
+                $gv->sendSMS($from, "FPPD is not running, cannot execute cmd: ".$SMSCommand);
+                sleep(1);
+                processReadSentMessages();
+                return;
+        } else {
+                logEntry("Sending message to : ".$from. " that FPPD status: ".$FPPDStatus);
+                $gv->sendSMS($from,"FPPD is running, I will execute command: ".$SMSCommand);
+                sleep(1);
+                //if sending a message.. need to clear it as it may hose up the next queue of messages
+                processReadSentMessages();
+        } 
+       $cmd = "/opt/fpp/bin/fpp ";
+
+        switch (trim(strtoupper($SMSCommand))) {
+
+                case "PLAY":
+                         $cmd .= "-P \"".$PLAYLIST_NAME."\"";
+                        break;
+
+                case "STOP":
+                        $cmd .= "-c stop";
+
+                        break;
+
+                case "REPEAT":
+
+                        $cmd .= "-p \"".$PLAYLIST_NAME."\"";
+                        break;
+
+                case "STATUS":
+                        $playlistName = getRunningPlaylist();
+                        if($playlistName == null) {
+                                $playlistName = " No current playlist active or FPPD starting, please try your command again in a few";
+                        }
+                        logEntry("Sending SMS to : ".$from. " playlist: ".$playlistName);
+                        $gv->sendSMS($from,"Playlist STATUS: ".$playlistName);
+                        break;
+
+                default:
+
+                        $cmd = "";
+                        break;
+        }
+
+        if($cmd !="" ) {
+                logEntry("Executing SMS command: ".$cmd);
+                exec($cmd,$output);
+                //system($cmd,$output);
+
+        }
+logEntry("Processing command: ".$cmd);
+
+}
 //is fppd running?????
 function isFPPDRunning() {
 	$FPPDStatus=null;
@@ -115,6 +215,8 @@ function processNewMessages() {
 	$messageQueue = array();
 	$newmsgIDs = array();
 	$sms = $gv->getUnreadSMS();
+	logEntry("SMS COUNT: ".count($sms)." ----");
+
 	$newMessageCount=0;
 	foreach($sms as $s) {
 	
