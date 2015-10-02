@@ -2,7 +2,8 @@
 //$DEBUG=true;
 
 include_once "/opt/fpp/www/common.php";
-include_once "functions.inc.php";
+include_once 'functions.inc.php';
+include_once 'commonFunctions.inc.php';
 $pluginName = "SMS";
 
 $PLAYLIST_NAME="";
@@ -19,7 +20,25 @@ $SMSGETScriptFilename = $scriptDirectory."/".$pluginName."_GET.sh";
 $logFile = $settings['logDirectory']."/".$pluginName.".log";
 
 
+
+$gitURL = "https://github.com/LightsOnHudson/FPP-Plugin-SMS.git";
+
+
+$pluginUpdateFile = $settings['pluginDirectory']."/".$pluginName."/"."pluginUpdate.inc";
+
+
 createSMSSequenceFiles();
+
+
+logEntry("plugin update file: ".$pluginUpdateFile);
+
+
+if(isset($_POST['updatePlugin']))
+{
+	$updateResult = updatePluginFromGitHub($gitURL, $branch="master", $pluginName);
+
+	echo $updateResult."<br/> \n";
+}
 
 
 if(isset($_POST['submit']))
@@ -41,16 +60,16 @@ if(isset($_POST['submit']))
 }
 
 	
-	$PLAYLIST_NAME = urldecode(ReadSettingFromFile("PLAYLIST_NAME",$pluginName));
-	$WHITELIST_NUMBERS = urldecode(ReadSettingFromFile("WHITELIST_NUMBERS",$pluginName));
-	$CONTROL_NUMBERS = urldecode(ReadSettingFromFile("CONTROL_NUMBERS",$pluginName));
-	$REPLY_TEXT = urldecode(ReadSettingFromFile("REPLY_TEXT",$pluginName));
-	$VALID_COMMANDS = urldecode(ReadSettingFromFile("VALID_COMMANDS",$pluginName));
-	$EMAIL = urldecode(ReadSettingFromFile("EMAIL",$pluginName));
-	$PASSWORD = urldecode(ReadSettingFromFile("PASSWORD",$pluginName));
-	$LAST_READ = urldecode(ReadSettingFromFile("LAST_READ",$pluginName));
+	$PLAYLIST_NAME = $pluginSettings['PLAYLIST_NAME'];
+	$WHITELIST_NUMBERS = urldecode($pluginSettings['WHITELIST_NUMBERS']);
+	$CONTROL_NUMBERS = urldecode($pluginSettings['CONTROL_NUMBERS']);
+	$REPLY_TEXT = urldecode($pluginSettings['REPLY_TEXT']);
+	$VALID_COMMANDS = urldecode($pluginSettings['VALID_COMMANDS']);
+	$EMAIL = urldecode($pluginSettings['EMAIL']);
+	$PASSWORD = $pluginSettings['PASSWORD'];
+	$LAST_READ = $pluginSettings['LAST_READ'];
 	
-	$ENABLED = urldecode(ReadSettingFromFile("ENABLED",$pluginName));
+	$ENABLED = $pluginSettings['ENABLED'];
 
 if($REPLY_TEXT == "") {
 	$REPLY_TEXT = "Thank you for your message, it has been added to the Queue";
@@ -214,9 +233,14 @@ echo "<input type=\"text\" name=\"CONTROL_NUMBERS\" size=\"16\" value=\"".$CONTR
 ?>
 <p/>
 <input id="submit_button" name="submit" type="submit" class="buttons" value="Save Config">
-
+<?
+ if(file_exists($pluginUpdateFile))
+ {
+ 	//echo "updating plugin included";
+	include $pluginUpdateFile;
+}
+?>
 </form>
-
 
 <p>To report a bug, please file it against the sms Control plugin project on Git: https://github.com/LightsOnHudson/FPP-SMS
 
