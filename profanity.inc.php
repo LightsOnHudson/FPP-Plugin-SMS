@@ -13,32 +13,38 @@ function curl_post_request($url, $data)
 
 //function to check if it is profanity
 function check_for_profanity($message) {
-global $DEBUG;$pluginSettings;
+global $DEBUG,$pluginSettings;
 
+	if($DEBUG)
 	logEntry("inside profanity checker");
+	
+	logEntry("checking for profanity inside message: ".$message);
+
 	$API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
 	$API_KEY = urldecode($pluginSettings['API_KEY']);
+//$API_KEY="AIsVRYZULYYQZCTcG4zPtagKVS2tsf4T4U9bjfYZjI1EE75F";
+//$API_USER_ID ="LightsOnHudson";
 
-	
+	logEntry("API USER: ".$API_USER_ID);
+	logEntry("API KEY: ".$API_KEY);	
 	$postData = array(
 		"user-id" => $API_USER_ID,
 		"api-key" => $API_KEY,
 		"content" => $message
-		//"ip" => "162.209.104.195"
 );
 
 $json = curl_post_request("https://neutrinoapi.com/bad-word-filter", $postData);
 //$json = curl_post_request("https://neutrinoapi.com/ip-info", $postData);
 $result = json_decode($json, true);
-logEntry("profanty result: is bad: ".$result['is-bad']);
-logEntry("profanity result: total bad words: ".$result['bad-words-total']);
+//logEntry("profanty result: is bad: ".$result['is-bad']);
+//logEntry("profanity result: total bad words: ".$result['bad-words-total']);
 
 
 
-//echo $result['is-bad']."\n";
-//echo $result['bad-words-total']."\n";
+logEntry("is bad: ".$result['is-bad']);
+logEntry("is bad total: ".$result['bad-words-total']);
 //echo print_r($result['bad-words-list'])."\n";
-//echo $result['censored-content']."\n";
+logEntry("censored content: ".$result['censored-content']);
 return $result;
 }
 
@@ -55,6 +61,5 @@ function is_profanity($q,$json=0) {
 //$q="butt";
 //$q="shoe";
 
-//echo is_profanity($q);
 
 ?>

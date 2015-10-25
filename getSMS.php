@@ -43,6 +43,10 @@ $pluginConfigFile = $settings['configDirectory'] . "/plugin." .$pluginName;
 if (file_exists($pluginConfigFile))
 	$pluginSettings = parse_ini_file($pluginConfigFile);
 
+if($DEBUG)
+	print_r($pluginSettings);
+
+
 $EMAIL = urldecode($pluginSettings['EMAIL']);
 $PASSWORD = urldecode($pluginSettings['PASSWORD']);
 $PLAYLIST_NAME = urldecode($pluginSettings['PLAYLIST_NAME']);
@@ -182,7 +186,7 @@ for($i=0;$i<=count($messageQueue)-1;$i++) {
 				//not from a white listed or a control number so just a regular user
 				//need to check for profanity
 				//profanity checker API
-				$profanityCheck = check_for_profanity($messageTextsage);
+				$profanityCheck = check_for_profanity($messageText);
 				//$profanityCheck = profanityChecker($messageText);
 				
 				//if(!$profanityCheck) {

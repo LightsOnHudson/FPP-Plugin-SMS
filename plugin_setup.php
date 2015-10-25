@@ -241,14 +241,14 @@ echo "<input type=\"text\" name=\"CONTROL_NUMBERS\" size=\"16\" value=\"".$CONTR
 
 echo "<p/> \n";
 
-echo "API User ID: \n";
+echo "Profanity API User ID: \n";
 
 echo "<input type=\"text\" name=\"API_USER_ID\" size=\"32\" value=\"".$API_USER_ID."\"> \n";
 
 
 echo "<p/> \n";
 
-echo "API KEY: \n";
+echo "Profanity API KEY: \n";
 
 echo "<input type=\"text\" name=\"API_KEY\" size=\"64\" value=\"".$API_KEY."\"> \n";
 
