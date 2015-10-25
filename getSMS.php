@@ -39,13 +39,17 @@ require ("lock.helper.php");
 define('LOCK_DIR', '/tmp/');
 define('LOCK_SUFFIX', '.lock');
 
-$EMAIL = urldecode(ReadSettingFromFile("EMAIL",$pluginName));
-$PASSWORD = urldecode(ReadSettingFromFile("PASSWORD",$pluginName));
-$PLAYLIST_NAME = urldecode(ReadSettingFromFile("PLAYLIST_NAME",$pluginName));
-$WHITELIST_NUMBERS = urldecode(ReadSettingFromFile("WHITELIST_NUMBERS",$pluginName));
-$CONTROL_NUMBERS = urldecode(ReadSettingFromFile("CONTROL_NUMBERS",$pluginName));
-$REPLY_TEXT = urldecode(ReadSettingFromFile("REPLY_TEXT",$pluginName));
-$VALID_COMMANDS = urldecode(ReadSettingFromFile("VALID_COMMANDS",$pluginName));
+$pluginConfigFile = $settings['configDirectory'] . "/plugin." .$pluginName;
+if (file_exists($pluginConfigFile))
+	$pluginSettings = parse_ini_file($pluginConfigFile);
+
+$EMAIL = urldecode($pluginSettings['EMAIL']);
+$PASSWORD = urldecode($pluginSettings['PASSWORD']);
+$PLAYLIST_NAME = urldecode($pluginSettings['PLAYLIST_NAME']);
+$WHITELIST_NUMBERS = urldecode($pluginSettings['WHITELIST_NUMBERS']);
+$CONTROL_NUMBERS = urldecode($pluginSettings['CONTROL_NUMBERS']);
+$REPLY_TEXT = urldecode($pluginSettings['REPLY_TEXT']);
+$VALID_COMMANDS = urldecode($pluginSettings['VALID_COMMANDS']);
 
 $COMMAND_ARRAY = explode(",",trim(strtoupper($VALID_COMMANDS)));
 $CONTROL_NUMBER_ARRAY = explode(",",$CONTROL_NUMBERS);
