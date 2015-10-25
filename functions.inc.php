@@ -15,6 +15,7 @@ function processSMSMessage($from,$messageText) {
 
 
 }
+//old profanity checkers
 function profanityChecker($messageText) {
 
         $profanityCheck = false;

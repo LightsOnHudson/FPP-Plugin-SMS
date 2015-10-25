@@ -56,6 +56,8 @@ if(isset($_POST['submit']))
 	WriteSettingToFile("VALID_COMMANDS",urlencode($_POST["VALID_COMMANDS"]),$pluginName);
 	WriteSettingToFile("ENABLED",urlencode($_POST["ENABLED"]),$pluginName);
 	WriteSettingToFile("LAST_READ",urlencode($_POST["LAST_READ"]),$pluginName);
+	WriteSettingToFile("API_USER_ID",urlencode($_POST["API_USER_ID"]),$pluginName);
+	WriteSettingToFile("API_KEY",urlencode($_POST["API_KEY"]),$pluginName);
 
 }
 
@@ -68,6 +70,8 @@ if(isset($_POST['submit']))
 	$EMAIL = urldecode($pluginSettings['EMAIL']);
 	$PASSWORD = $pluginSettings['PASSWORD'];
 	$LAST_READ = $pluginSettings['LAST_READ'];
+	$API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
+	$API_KEY = urldecode($pluginSettings['API_KEY']);
 	
 	$ENABLED = $pluginSettings['ENABLED'];
 
@@ -136,6 +140,10 @@ if($VALID_COMMANDS == "") {
 <li>Add the crontabAdd options to your crontab to have the sms run every X minutes to process commands</li>
 <li>The Writeplaylist script writes the current running playlist (if any) to a tmp file on /tmp</li>
 </ul>
+<ul>
+<li>This uses the profanity checker located at: https://www.neutrinoapi.com/api/bad-word-filter/</li>
+<li>You will need to visit this site and generate a userid and API Key</li>
+<li>NOTE: it has limited checks on FREE accounts</li>
 
 <p>DISCLAIMER:
 <ul>
@@ -229,6 +237,20 @@ echo "<p/> \n";
 echo "CONTROL NUMBER: \n";
 
 echo "<input type=\"text\" name=\"CONTROL_NUMBERS\" size=\"16\" value=\"".$CONTROL_NUMBERS."\"> \n";
+
+
+echo "<p/> \n";
+
+echo "API User ID: \n";
+
+echo "<input type=\"text\" name=\"API_USER_ID\" size=\"32\" value=\"".$API_USER_ID."\"> \n";
+
+
+echo "<p/> \n";
+
+echo "API KEY: \n";
+
+echo "<input type=\"text\" name=\"API_KEY\" size=\"64\" value=\"".$API_KEY."\"> \n";
 
 ?>
 <p/>

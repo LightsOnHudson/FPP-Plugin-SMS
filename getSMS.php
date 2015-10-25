@@ -15,6 +15,7 @@ include_once("/opt/fpp/www/config.php");
 include_once("/opt/fpp/www/common.php");
 include_once("functions.inc.php");
 include_once("commonFunctions.inc.php");
+include_once("profanity.inc.php");
 
 include_once ("GoogleVoice.php");
 
@@ -176,10 +177,14 @@ for($i=0;$i<=count($messageQueue)-1;$i++) {
 
 				//not from a white listed or a control number so just a regular user
 				//need to check for profanity
-
-				$profanityCheck = profanityChecker($messageText);
-				if(!$profanityCheck) {
-
+				//profanity checker API
+				$profanityCheck = check_for_profanity($messageTextsage);
+				//$profanityCheck = profanityChecker($messageText);
+				
+				//if(!$profanityCheck) {
+				//returns a list of array, 
+				if($profanityCheck['is-bad'] == 0 && $profanityCheck['bad-words-total'] == 0) {
+				
 					logEntry("Message: ".$messageText. " PASSED");
 					$gv->sendSMS($from,$REPLY_TEXT);
 					//$gv->sendSMS($from,"Thank you for your message, it has been added to the queue");
@@ -189,7 +194,7 @@ for($i=0;$i<=count($messageQueue)-1;$i++) {
 
 				} else {
 					logEntry("message: ".$messageText." FAILED");
-					$gv->sendSMS($from,"Your message contains profanity, sorry");
+					$gv->sendSMS($from,"Your message contains profanity, sorry. More messages like these will ban your phone number");
 					sleep(1);
 					processReadSentMessages();
 
