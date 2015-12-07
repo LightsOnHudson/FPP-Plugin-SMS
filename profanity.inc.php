@@ -22,8 +22,7 @@ global $DEBUG,$pluginSettings;
 
 	$API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
 	$API_KEY = urldecode($pluginSettings['API_KEY']);
-//$API_KEY="AIsVRYZULYYQZCTcG4zPtagKVS2tsf4T4U9bjfYZjI1EE75F";
-//$API_USER_ID ="LightsOnHudson";
+
 
 	logEntry("API USER: ".$API_USER_ID);
 	logEntry("API KEY: ".$API_KEY);	
