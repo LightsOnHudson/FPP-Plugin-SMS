@@ -39,7 +39,8 @@ class GoogleVoice {
 		$html = curl_exec($this->_ch);
 
 		// Parse the returned webpage for the "GALX" token, needed for POST requests.
-		if (preg_match('/name="GALX"\s*type="hidden"\s*value="([^"]+)"/', $html, $match))
+		if (preg_match('/name="GALX"\s*value="([^"]+)"/', $html, $match))
+		//if (preg_match('/name="GALX"\s*type="hidden"\s*value="([^"]+)"/', $html, $match))
 			$GALX = $match[1];
 		else
 			throw new Exception('Could not parse for GALX token');
