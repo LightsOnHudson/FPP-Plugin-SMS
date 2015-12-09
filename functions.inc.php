@@ -248,8 +248,8 @@ function processNewMessages() {
 			// Mark the message as read in your Google Voice Inbox.
 			//	$gv->markMessageRead($s->id);
 			//sleep(1);
-			$gv->deleteMessage($s->id);
-			$newmsgIDs[] = $s->id;
+		//	$gv->deleteMessage($s->id);
+		//	$newmsgIDs[] = $s->id;
 		}
 	}
 	
