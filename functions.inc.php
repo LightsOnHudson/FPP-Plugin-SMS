@@ -211,7 +211,7 @@ function processSequenceName($sequenceName,$sequenceAction="NONE RECEIVED") {
 //process new messages
 function processNewMessages() {
 
-	global $gv,$EMAIL;
+	global $gv,$EMAIL,$DEBUG;
 	logEntry("processing new entries in SMS queue - if any");
 	$messageQueue = array();
 	$newmsgIDs = array();
@@ -225,6 +225,10 @@ function processNewMessages() {
 	
 		$from = $s->phoneNumber;
 		$msgText = $s->messageText;
+		
+		if($DEBUG) {
+			logEntry("From: ".$from." MsgText: ".$msgText);
+		}
 	
 		//strip the +1 from the phone number
 		if(substr($from,0,2) == "+1")
@@ -233,6 +237,10 @@ function processNewMessages() {
 		}
 	
 		$messageQueue[$newMessageCount]=array($from,$msgText);
+		
+		if($DEBUG){
+			print_r($messageQueue);
+		}
 	
 		$newMessageCount++;
 	
@@ -249,8 +257,10 @@ function processNewMessages() {
 		logEntry ("Received : ".$newMessageCount. " Messages in Queue");
 	} else {
 		logEntry("No messages in queue: ".$EMAIL." to process");
-		//exit(0);
-		return null;
+			//exit here : dec 9
+			lockHelper::unlock();
+			exit(0);
+		//return null;
 	
 	}
 	return $messageQueue;
