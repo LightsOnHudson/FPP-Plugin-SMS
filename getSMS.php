@@ -43,8 +43,6 @@ $pluginConfigFile = $settings['configDirectory'] . "/plugin." .$pluginName;
 if (file_exists($pluginConfigFile))
 	$pluginSettings = parse_ini_file($pluginConfigFile);
 
-if($DEBUG)
-	print_r($pluginSettings);
 
 
 $EMAIL = urldecode($pluginSettings['EMAIL']);
@@ -54,6 +52,14 @@ $WHITELIST_NUMBERS = urldecode($pluginSettings['WHITELIST_NUMBERS']);
 $CONTROL_NUMBERS = urldecode($pluginSettings['CONTROL_NUMBERS']);
 $REPLY_TEXT = urldecode($pluginSettings['REPLY_TEXT']);
 $VALID_COMMANDS = urldecode($pluginSettings['VALID_COMMANDS']);
+
+if(urldecode($pluginSettings['DEBUG'] != "")) {
+	$DEBUG=urldecode($pluginSettings['DEBUG']);
+}
+
+if($DEBUG)
+	print_r($pluginSettings);
+
 
 $COMMAND_ARRAY = explode(",",trim(strtoupper($VALID_COMMANDS)));
 $CONTROL_NUMBER_ARRAY = explode(",",$CONTROL_NUMBERS);
