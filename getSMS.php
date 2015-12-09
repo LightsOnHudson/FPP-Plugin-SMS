@@ -107,6 +107,10 @@ processReadSentMessages();
 
 sleep($GVSleepTime);
 $messageQueue = processNewMessages();
+
+if($DEBUG)
+print_r($messageQueue);
+
 if($messageQueue == null) {
 	lockHelper::unlock();
 	exit(0);
