@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-//error_reporting(0);
+error_reporting(0);
 
 $pluginName ="SMS";
 $myPid = getmypid();
@@ -165,12 +165,12 @@ $i=0;
 
 	//echo "To: ".$to."\n";
 
-	$from = substr($from,strpos($from,".")+1);
+	//$from = substr($from,strpos($from,".")+1);
 		//echo "From: ".$from."\n";
 
-	$from = substr($from,1,strpos($from,".")-1);
+	//$from = substr($from,1,strpos($from,".")-1);
 
-	$from = trim($from);
+	//$from = trim($from);
 
 	$from = $phoneNumber;
 	//echo "from: ".$from."\n";
@@ -202,7 +202,7 @@ $i=0;
 		logEntry( "we got a match");
 		}
 		$phoneNumber = get_string_between ($subject,"[","]");
-		$phoneNumber =$phone = preg_replace('/(\W*)/', '', $phoneNumber);
+		$phoneNumber = $phone = preg_replace('/(\W*)/', '', $phoneNumber);
 		logEntry("Phone number: ".$phoneNumber);
 
 		//get the message up to the first carriage return???
