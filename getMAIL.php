@@ -53,6 +53,8 @@ $CONTROL_NUMBERS = urldecode($pluginSettings['CONTROL_NUMBERS']);
 $REPLY_TEXT = urldecode($pluginSettings['REPLY_TEXT']);
 $VALID_COMMANDS = urldecode($pluginSettings['VALID_COMMANDS']);
 $MAIL_LAST_TIMESTAMP= urldecode($pluginSettings['MAIL_LAST_TIMESTAMP']);
+$API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
+$API_KEY = urldecode($pluginSettings['API_KEY']);
 
 if(urldecode($pluginSettings['DEBUG'] != "")) {
         $DEBUG=urldecode($pluginSettings['DEBUG']);
@@ -117,9 +119,8 @@ $messageFormat = 1;
     $sorted_mbox = imap_sort($mbox, SORTARRIVAL, 1);
     $totalrows = imap_num_msg($mbox);
 
-	echo "total mesages: ".$totalrows."\n";
+	logEntry("total mesages: ".$totalrows);
 
-	echo "retrieiving first 5 messages \n";
         $emails = imap_search($mbox,$imap_search);
         //$emails = imap_search($mbox,'SUBJECT "SMS from"');
         //$emails = imap_search($mbox,'ALL');
@@ -128,7 +129,7 @@ $messageFormat = 1;
 
 
 if($emails) {
-  echo "got emails";
+  //echo "got emails";
   /* begin output var */
   $output = '';
 
@@ -142,11 +143,11 @@ $i=0;
   foreach($emails as $email_number) {
 
 
-	$mailUID = $overview[0]->uid;
     /* get information specific to this email */
     $overview = imap_fetch_overview($mbox,$email_number,0);
     $message = imap_fetchbody($mbox,$email_number,$messageFormat);
 
+	$mailUID = $overview[0]->uid;
 
 
     /* output the email header information */
@@ -155,9 +156,24 @@ $i=0;
 	$from =  $overview[0]->from;
 
 	//echo "From: ".$from."\n";
-	$from =  get_string_between($from,"\"","\"");
-	$from = substr($from,0,strpos($from,"(SMS)"));
+	$from =  get_string_between($from,"<","@");
+	//echo "from: ".$from."\n";
+
+	//the to is the first one and the from is the second
+
+	$to = substr($from,1,strpos($from,".")-1);
+
+	//echo "To: ".$to."\n";
+
+	$from = substr($from,strpos($from,".")+1);
+		//echo "From: ".$from."\n";
+
+	$from = substr($from,1,strpos($from,".")-1);
+
 	$from = trim($from);
+
+	$from = $phoneNumber;
+	//echo "from: ".$from."\n";
 
 	$mailUID = $overview[0]->uid;
 
@@ -180,17 +196,20 @@ $i=0;
 
 	if($matches[0] !="" ) {
 
-		echo "Message number: ".$email_number."\n";
-		echo "message uid: ".$mailUID."\n";
-		echo "we got a match \n";
+		if($DEBUG) {
+		logEntry("Message number: ".$email_number);
+		logEntry("message uid: ".$mailUID);
+		logEntry( "we got a match");
+		}
 		$phoneNumber = get_string_between ($subject,"[","]");
-		echo "Phone number: ".$phoneNumber."\n";
+		$phoneNumber =$phone = preg_replace('/(\W*)/', '', $phoneNumber);
+		logEntry("Phone number: ".$phoneNumber);
 
 		//get the message up to the first carriage return???
 	
 		$message = substr($message,0,strpos($message,"\n"));
-		echo "Message: ".$message."\n";
-		echo "messagedate: ".$messageDate."\n";
+		logEntry("Message: ".$message);
+		logEntry("messagedate: ".$messageDate." UDate: ".$overview[0]->udate);
 
 		$messageTimestamp = $overview[0]->udate;
 
@@ -205,16 +224,15 @@ $i=0;
 
 		logEntry("updating message last download to: ".$messageTimestamp);
 		WriteSettingToFile("MAIL_LAST_TIMESTAMP",$messageTimestamp,$pluginName);
-		echo "from: ".$from."\n";
-		$from =  $overview[0]->from;
-		echo "from: ".$from."\n";
-		$from = get_string_between($from,"<",".");
+//		$from =  $overview[0]->from;
+		//echo "from: ".$from."\n";
+//		$from = get_string_between($from,"<",".");
 	
-		echo "from: ".$from."\n";
+		//echo "from: ".$from."\n";
 
 		//US based numbers, strip the 1 in the front
-		$from = substr($from,1);
-		echo "from: ".$from."\n";
+//		$from = substr($from,1);
+		logEntry( "from: ".$from);
 
 	 $status = imap_setflag_full($mbox, $mailUID, "\\Seen \\Flagged", ST_UID);
  $MESSAGE_USED=false;
@@ -289,7 +307,7 @@ $i=0;
 
                                         logEntry("Message: ".$messageText. " PASSED");
                                         $gv->sendSMS($from,$REPLY_TEXT);
-                                        //$gv->sendSMS($from,"Thank you for your message, it has been added to the queue");
+                                 //       $gv->sendSMS($from,"Thank you for your message, it has been added to the queue");
                                         processSMSMessage($from,$messageText);
                                         sleep(1);
                                  //       processReadSentMessages();

@@ -13,15 +13,15 @@ function curl_post_request($url, $data)
 
 //function to check if it is profanity
 function check_for_profanity($message) {
-global $DEBUG,$pluginSettings;
+global $DEBUG,$pluginSettings,$API_USER_ID, $API_KEY;
 
 	if($DEBUG)
 	logEntry("inside profanity checker");
 	
 	logEntry("checking for profanity inside message: ".$message);
 
-	$API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
-	$API_KEY = urldecode($pluginSettings['API_KEY']);
+//	$API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
+//	$API_KEY = urldecode($pluginSettings['API_KEY']);
 
 
 	logEntry("API USER: ".$API_USER_ID);

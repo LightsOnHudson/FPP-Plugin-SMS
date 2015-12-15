@@ -154,6 +154,8 @@ class GoogleVoice {
 			'text' => $message
 			));
 		curl_exec($this->_ch);
+
+	//echo "sending sms\n";
 	}
 
 	/**
