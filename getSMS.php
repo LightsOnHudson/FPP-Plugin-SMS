@@ -44,6 +44,8 @@ if (file_exists($pluginConfigFile))
 	$pluginSettings = parse_ini_file($pluginConfigFile);
 
 
+//page name to run the matrix code to output to matrix (remote or local);
+$MATRIX_EXEC_PAGE_NAME = "matrix.php";
 
 $EMAIL = urldecode($pluginSettings['EMAIL']);
 $PASSWORD = urldecode($pluginSettings['PASSWORD']);
@@ -52,6 +54,8 @@ $WHITELIST_NUMBERS = urldecode($pluginSettings['WHITELIST_NUMBERS']);
 $CONTROL_NUMBERS = urldecode($pluginSettings['CONTROL_NUMBERS']);
 $REPLY_TEXT = urldecode($pluginSettings['REPLY_TEXT']);
 $VALID_COMMANDS = urldecode($pluginSettings['VALID_COMMANDS']);
+$IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
+$MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
 
 if(urldecode($pluginSettings['DEBUG'] != "")) {
 	$DEBUG=urldecode($pluginSettings['DEBUG']);
@@ -222,6 +226,23 @@ for($i=0;$i<=count($messageQueue)-1;$i++) {
 
 		}
 	
+		if($IMMEDIATE_OUTPUT != "on" && $IMMEDIATE_OUTPUT != "1") {
+			logEntry("NOT immediately outputting to matrix");
+		} else {
+			logEntry("IMMEDIATE OUTPUT ENABLED");
+			logEntry("Matrix location: ".$MATRIX_LOCATION);
+			logEntry("Matrix Exec page: ".$MATRIX_EXEC_PAGE_NAME);
+		
+			if($MATRIX_LOCATION != "127.0.0.1") {
+				$remoteCMD = "/usr/bin/curl -s --basic 'http://".$MATRIX_LOCATION."/plugin.php?plugin=".$MATRIX_MESSAGE_PLUGIN_NAME."&page=".$MATRIX_EXEC_PAGE_NAME."&nopage=1' > /dev/null";
+				logEntry("REMOTE MATRIX TRIGGER: ".$remoteCMD);
+				exec($remoteCMD);
+			} else {
+				$IMMEDIATE_CMD = $settings['pluginDirectory']."/".$MATRIX_MESSAGE_PLUGIN_NAME."/matrix.php";
+				logEntry("LOCAL command: ".$IMMEDIATE_CMD);
+				exec($IMMEDIATE_CMD);
+			}
+		}
 
 
 lockHelper::unlock();

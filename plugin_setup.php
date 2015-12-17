@@ -58,6 +58,8 @@ if(isset($_POST['submit']))
 	WriteSettingToFile("LAST_READ",urlencode($_POST["LAST_READ"]),$pluginName);
 	WriteSettingToFile("API_USER_ID",urlencode($_POST["API_USER_ID"]),$pluginName);
 	WriteSettingToFile("API_KEY",urlencode($_POST["API_KEY"]),$pluginName);
+	WriteSettingToFile("IMMEDIATE_OUTPUT",$IMMEDIATE_OUTPUT,$pluginName);
+	WriteSettingToFile("MATRIX_LOCATION",urlencode($MATRIX_LOCATION),$pluginName);
 
 }
 
@@ -72,6 +74,8 @@ if(isset($_POST['submit']))
 	$LAST_READ = $pluginSettings['LAST_READ'];
 	$API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
 	$API_KEY = urldecode($pluginSettings['API_KEY']);
+	$IMMEDIATE_OUTPUT = $pluginSettings['IMMEDIATE_OUTPUT'];
+	$MATRIX_LOCATION = $pluginSettings['MATRIX_LOCATION'];
 	
 	$ENABLED = $pluginSettings['ENABLED'];
 
@@ -173,7 +177,21 @@ if($ENABLED== 1 || $ENABLED == "on") {
 		echo "<input type=\"checkbox\"  name=\"ENABLED\"> \n";
 }
 
+echo "<p/> \n";
+echo "Immediately output to Matrix (Run MATRIX plugin): ";
 
+if($IMMEDIATE_OUTPUT == "on" || $IMMEDIATE_OUTPUT == 1) {
+	echo "<input type=\"checkbox\" checked name=\"IMMEDIATE_OUTPUT\"> \n";
+	//PrintSettingCheckbox("Radio Station", "ENABLED", $restart = 0, $reboot = 0, "ON", "OFF", $pluginName = $pluginName, $callbackName = "");
+} else {
+	echo "<input type=\"checkbox\"  name=\"IMMEDIATE_OUTPUT\"> \n";
+}
+echo "<p/> \n";
+?>
+MATRIX Message Plugin Location: (IP Address. default 127.0.0.1);
+<input type="text" size="15" value="<? if($MATRIX_LOCATION !="" ) { echo $MATRIX_LOCATION; } else { echo "127.0.0.1";}?>" name="MATRIX_LOCATION" id="MATRIX_LOCATION"></input>
+<p/>
+<?
 
 
 echo "<p/> \n";
