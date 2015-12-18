@@ -155,7 +155,7 @@ class GoogleVoice {
 			));
 		curl_exec($this->_ch);
 
-	//echo "sending sms\n";
+	//echo "sending sms to phonenumber: ".$number."\n";
 	}
 
 	/**

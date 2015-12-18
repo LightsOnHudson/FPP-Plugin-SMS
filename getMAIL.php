@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-error_reporting(0);
+//error_reporting(0);
 
 $pluginName ="SMS";
 $myPid = getmypid();
@@ -10,6 +10,7 @@ $messageQueue_Plugin = "MessageQueue";
 $MESSAGE_QUEUE_PLUGIN_ENABLED=false;
 
 $DEBUG=false;
+$NEW_MESSAGE=false;
 
 $skipJSsettings = 1;
 include_once("/opt/fpp/www/config.php");
@@ -170,14 +171,14 @@ $i=0;
 
 	//echo "To: ".$to."\n";
 
-	//$from = substr($from,strpos($from,".")+1);
+	$from = substr($from,strpos($from,".")+1);
 		//echo "From: ".$from."\n";
 
-	//$from = substr($from,1,strpos($from,".")-1);
+	$from = substr($from,1,strpos($from,".")-1);
 
-	//$from = trim($from);
+	$from = trim($from);
 
-	$from = $phoneNumber;
+	//$from = $phoneNumber;
 	//echo "from: ".$from."\n";
 
 	$mailUID = $overview[0]->uid;
@@ -202,28 +203,30 @@ $i=0;
 	if($matches[0] !="" ) {
 
 		if($DEBUG) {
-		logEntry("Message number: ".$email_number);
-		logEntry("message uid: ".$mailUID);
-		logEntry( "we got a match");
+		//logEntry("Message number: ".$email_number);
+	//	logEntry("message uid: ".$mailUID);
+	//	logEntry( "we got a match");
 		}
 		$phoneNumber = get_string_between ($subject,"[","]");
-		$phoneNumber = $phone = preg_replace('/(\W*)/', '', $phoneNumber);
-		logEntry("Phone number: ".$phoneNumber);
+		$phoneNumber = preg_replace('/(\W*)/', '', $phoneNumber);
+	//	logEntry("Phone number: ".$from);
 
 		//get the message up to the first carriage return???
 	
 		$message = substr($message,0,strpos($message,"\n"));
-		logEntry("Message: ".$message);
-		logEntry("messagedate: ".$messageDate." UDate: ".$overview[0]->udate);
+		//logEntry("messagedate: ".$messageDate." UDate: ".$overview[0]->udate);
 
 		$messageTimestamp = $overview[0]->udate;
 
 		if($MAIL_LAST_TIMESTAMP < $messageTimestamp) {
 			logEntry("We have a new message");
+			$NEW_MESSAGE = true;
+		logEntry("Message: ".$message);
+	
 
 		} else {
 
-			logEntry("this message is not new");
+		//	logEntry("this message is not new");
 			continue;
 		}
 
@@ -294,9 +297,7 @@ $i=0;
                                 logEntry($messageText. " is from a white listed number");
                                 processSMSMessage($from,$messageText);
                                 $gv->sendSMS($from,$REPLY_TEXT);
-                                //$gv->sendSMS($from,"Thank you for your message, it will be addedd to the queue: WHITELIST");
                                 sleep(1);
-                                //processReadSentMessages();
 
         } else if(!$MESSAGE_USED){
 
@@ -304,24 +305,19 @@ $i=0;
                                 //need to check for profanity
                                 //profanity checker API
                                 $profanityCheck = check_for_profanity($messageText);
-                                //$profanityCheck = profanityChecker($messageText);
 
-                                //if(!$profanityCheck) {
                                 //returns a list of array,
                                 if($profanityCheck['is-bad'] == 0 && $profanityCheck['bad-words-total'] == 0) {
 
                                         logEntry("Message: ".$messageText. " PASSED");
                                         $gv->sendSMS($from,$REPLY_TEXT);
-                                 //       $gv->sendSMS($from,"Thank you for your message, it has been added to the queue");
                                         processSMSMessage($from,$messageText);
                                         sleep(1);
-                                 //       processReadSentMessages();
 
                                 } else {
                                         logEntry("message: ".$messageText." FAILED");
                                         $gv->sendSMS($from,"Your message contains profanity, sorry. More messages like these will ban your phone number");
                                         sleep(1);
-                                  //      processReadSentMessages();
 
                                 }
         }
@@ -334,12 +330,6 @@ $i=0;
 	
 	}
 
-	//echo "setting message: ".$i." to seen \n";
-
-	// $status = imap_setflag_full($mbox, $i, "\\Seen");
-	 //$status = imap_setflag_full($mbox, "1", "\\Seen \\Flagged", ST_UID);
-
- // echo $output;
  
 } 
 
@@ -348,7 +338,11 @@ $i=0;
 
 /* close the connection */
 imap_close($mbox);
-
+if(!$NEW_MESSAGE){
+	logEntry("No New messages to process exiting");
+	lockHelper::unlock();
+	exit(0);
+}
 if($IMMEDIATE_OUTPUT != "on" && $IMMEDIATE_OUTPUT != "1") {
 	logEntry("NOT immediately outputting to matrix");
 } else {
@@ -366,6 +360,7 @@ if($IMMEDIATE_OUTPUT != "on" && $IMMEDIATE_OUTPUT != "1") {
 		exec($IMMEDIATE_CMD);
 	}
 }
+
 lockHelper::unlock();
 
 
