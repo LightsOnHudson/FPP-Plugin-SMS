@@ -345,7 +345,7 @@ for($i=0;$i<=$messageCount-1;$i++ ) {
 
 	echo "<tr> \n";
 	
-	$messageQueueParts = explode("|",$pluginMessageQueue[$messageIndex]);
+	$messageQueueParts = explode("|",$pluginMessages[$i]);
 	
 	echo "<td> \n";
 	echo $messageQueueParts[0];
