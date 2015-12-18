@@ -17,8 +17,26 @@ $eventExtension = ".fevt";
 $SMSEventFile = $eventDirectory."/".$MAJOR."_".$MINOR.$eventExtension;
 $SMSGETScriptFilename = $scriptDirectory."/".$pluginName."_GET.sh";
 
+$messageQueue_Plugin = "MessageQueue";
+$MESSAGE_QUEUE_PLUGIN_ENABLED=false;
+
+
 $logFile = $settings['logDirectory']."/".$pluginName.".log";
 
+
+
+$messageQueuePluginPath = $pluginDirectory."/".$messageQueue_Plugin."/";
+
+$messageQueueFile = urldecode(ReadSettingFromFile("MESSAGE_FILE",$messageQueue_Plugin));
+
+if(file_exists($messageQueuePluginPath."functions.inc.php"))
+{
+	include $messageQueuePluginPath."functions.inc.php";
+	$MESSAGE_QUEUE_PLUGIN_ENABLED=true;
+
+} else {
+	logEntry("Message Queue Plugin not installed, some features will be disabled");
+}
 
 
 $gitURL = "https://github.com/LightsOnHudson/FPP-Plugin-SMS.git";
@@ -320,8 +338,7 @@ print_r($pluginMessages);
 
 
 ?>
-<p>To report a bug, please file it against the sms Control plugin project on Git: https://github.com/LightsOnHudson/FPP-Plugin-SMS
-
+<p>To report a bug, please file it against the sms Control plugin project on Git:<? echo $gitURL;?> 
 </fieldset>
 </div>
 <br />
