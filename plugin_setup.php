@@ -350,8 +350,7 @@ for($i=0;$i<=$messageCount-1;$i++ ) {
 	//unix timestamp
 	echo "<td> \n";
 	
-	$date->setTimestamp($messageQueueParts[0]);
-	echo $date->format('U = Y-m-d H:i:s') . "\n";
+	echo date('d M Y H:i:s',$messageQueueParts[0]);
 	echo "</td> \n";
 	
 	echo "<td> \n";
