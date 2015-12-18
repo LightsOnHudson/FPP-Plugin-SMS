@@ -297,17 +297,21 @@ function processReadSentMessages() {
 	
 	
 }
-function logEntry($data) {
+function logEntry($data,$logLevel=1) {
 
-	global $logFile,$myPid;
+	global $logFile,$myPid, $LOG_LEVEL;
 
 	
-
+	if($logLevel <= $LOG_LEVEL) 
+		return
+		
 		$data = $_SERVER['PHP_SELF']." : [".$myPid."] ".$data;
-	
-	$logWrite= fopen($logFile, "a") or die("Unable to open file!");
-	fwrite($logWrite, date('Y-m-d h:i:s A',time()).": ".$data."\n");
-	fclose($logWrite);
+		
+		$logWrite= fopen($logFile, "a") or die("Unable to open file!");
+		fwrite($logWrite, date('Y-m-d h:i:s A',time()).": ".$data."\n");
+		fclose($logWrite);
+
+
 }
 
 

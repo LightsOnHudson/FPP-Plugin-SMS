@@ -10,6 +10,8 @@ $messageQueue_Plugin = "MessageQueue";
 $MESSAGE_QUEUE_PLUGIN_ENABLED=false;
 
 $DEBUG=false;
+$LOG_LEVEL=0;
+
 $NEW_MESSAGE=false;
 
 $skipJSsettings = 1;
@@ -63,6 +65,7 @@ $API_KEY = urldecode($pluginSettings['API_KEY']);
 $IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
 $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
 $RESPONSE_METHOD = urldecode($pluginSettings['RESPONSE_METHOD']);
+$LOG_LEVEL = urldecode($pluginSettings['LOG_LEVEL']);
 
 if(urldecode($pluginSettings['DEBUG'] != "")) {
         $DEBUG=urldecode($pluginSettings['DEBUG']);
@@ -356,7 +359,7 @@ $i=0;
 /* close the connection */
 imap_close($mbox);
 if(!$NEW_MESSAGE){
-	logEntry("No New messages to process exiting");
+	logEntry("No New messages to process exiting",0);
 	lockHelper::unlock();
 	exit(0);
 }
@@ -364,6 +367,8 @@ if($IMMEDIATE_OUTPUT != "on" && $IMMEDIATE_OUTPUT != "1") {
 	logEntry("NOT immediately outputting to matrix");
 } else {
 	logEntry("IMMEDIATE OUTPUT ENABLED");
+	logEntry("Forking Matrix command");
+	
 	logEntry("Matrix location: ".$MATRIX_LOCATION);
 	logEntry("Matrix Exec page: ".$MATRIX_EXEC_PAGE_NAME);
 
