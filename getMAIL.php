@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-//error_reporting(0);
+error_reporting(0);
 
 $pluginName ="SMS";
 $myPid = getmypid();
@@ -19,6 +19,7 @@ include_once("functions.inc.php");
 include_once("commonFunctions.inc.php");
 include_once("profanity.inc.php");
 include_once ("GoogleVoice.php");
+require 'PHPMailer/PHPMailerAutoload.php';
 
 $logFile = $settings['logDirectory']."/".$pluginName.".log";
 
@@ -232,6 +233,7 @@ $i=0;
 
 		logEntry("updating message last download to: ".$messageTimestamp);
 		WriteSettingToFile("MAIL_LAST_TIMESTAMP",$messageTimestamp,$pluginName);
+		$GMAIL_ADDRESS = $overview[0]->from;
 //		$from =  $overview[0]->from;
 		//echo "from: ".$from."\n";
 //		$from = get_string_between($from,"<",".");
@@ -282,7 +284,9 @@ $i=0;
                 } else {
                                 //generic message to display from control number just like a regular user
                                 processSMSMessage($from,$messageText);
-                                $gv->sendSMS($from,$REPLY_TEXT);
+                               // $gv->sendSMS($from,$REPLY_TEXT);
+                                $subject="";
+                                sendMail($GMAIL_ADDRESS, $EMAIL, $subject, $REPLY_TEXT);
                                 sleep(1);
 
                                 //processReadSentMessages();
@@ -296,7 +300,9 @@ $i=0;
                                 $MESSAGE_USED=true;
                                 logEntry($messageText. " is from a white listed number");
                                 processSMSMessage($from,$messageText);
-                                $gv->sendSMS($from,$REPLY_TEXT);
+                                 // $gv->sendSMS($from,$REPLY_TEXT);
+                                $subject="";
+                                sendMail($GMAIL_ADDRESS, $EMAIL, $subject, $REPLY_TEXT);
                                 sleep(1);
 
         } else if(!$MESSAGE_USED){
@@ -310,14 +316,20 @@ $i=0;
                                 if($profanityCheck['is-bad'] == 0 && $profanityCheck['bad-words-total'] == 0) {
 
                                         logEntry("Message: ".$messageText. " PASSED");
-                                        $gv->sendSMS($from,$REPLY_TEXT);
+                                         // $gv->sendSMS($from,$REPLY_TEXT);
+                                $subject="";
+                                sendMail($GMAIL_ADDRESS, $EMAIL, $subject, $REPLY_TEXT);
                                         processSMSMessage($from,$messageText);
                                         sleep(1);
 
                                 } else {
+                                	$subject="";
                                         logEntry("message: ".$messageText." FAILED");
-                                        $gv->sendSMS($from,"Your message contains profanity, sorry. More messages like these will ban your phone number");
-                                        sleep(1);
+                                        $REPLY_TEXT = "Your message contains profanity, sorry. More messages like these will ban your phone number";
+                                         // $gv->sendSMS($from,$REPLY_TEXT);
+                                $subject="";
+                                sendMail($GMAIL_ADDRESS, $EMAIL, $subject, $REPLY_TEXT);
+                                sleep(1);
 
                                 }
         }
@@ -363,5 +375,84 @@ if($IMMEDIATE_OUTPUT != "on" && $IMMEDIATE_OUTPUT != "1") {
 
 lockHelper::unlock();
 
+//sendmail using phpmailer function
+function sendMail($to, $from, $subject, $body) {
+	global $DEBUG, $EMAIL, $PASSWORD;
+	
+date_default_timezone_set('Etc/UTC');
+
+if($DEBUG) {
+	echo "To: ".$to."\n";
+	echo "From: ".$from."\n";
+	echo "subject: ".$subject."\n";
+	echo "body: ".$body."\n";
+}
+
+//Create a new PHPMailer instance
+$mail = new PHPMailer;
+
+//Tell PHPMailer to use SMTP
+$mail->isSMTP();
+
+//Enable SMTP debugging
+// 0 = off (for production use)
+// 1 = client messages
+// 2 = client and server messages
+$mail->SMTPDebug = 2;
+
+//Ask for HTML-friendly debug output
+$mail->Debugoutput = 'html';
+
+//Set the hostname of the mail server
+$mail->Host = 'smtp.gmail.com';
+// use
+// $mail->Host = gethostbyname('smtp.gmail.com');
+// if your network does not support SMTP over IPv6
+
+//Set the SMTP port number - 587 for authenticated TLS, a.k.a. RFC4409 SMTP submission
+$mail->Port = 587;
+
+//Set the encryption system to use - ssl (deprecated) or tls
+$mail->SMTPSecure = 'tls';
+
+//Whether to use SMTP authentication
+$mail->SMTPAuth = true;
+
+//Username to use for SMTP authentication - use full email address for gmail
+$mail->Username = $EMAIL;
+
+//Password to use for SMTP authentication
+$mail->Password = $PASSWORD;
+
+//Set who the message is to be sent from
+$mail->setFrom($PASSWORD, 'Holiday');
+
+//Set an alternative reply-to address
+$mail->addReplyTo($EMAIL, 'Holiday');
+
+//Set who the message is to be sent to
+$mail->addAddress($to, $from);
+
+//Set the subject line
+$mail->Subject = $body;
+
+//Read an HTML message body from an external file, convert referenced images to embedded,
+//convert HTML into a basic plain-text alternative body
+//$mail->msgHTML(file_get_contents('contents.html'), dirname(__FILE__));
+
+//Replace the plain text body with one created manually
+$mail->AltBody = $body;
+
+//Attach an image file
+//$mail->addAttachment('images/phpmailer_mini.png');
+
+//send the message, check for errors
+if (!$mail->send()) {
+    echo "Mailer Error: " . $mail->ErrorInfo;
+} else {
+    echo "Message sent!";
+}
+	
+}
 
 ?>
