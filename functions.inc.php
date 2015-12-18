@@ -39,7 +39,7 @@ function getFPPLogLevel() {
 				
 		}
 		
-		logEntry("Log level in translated from fpp settings file: ".$logLevel);
+		
 	
 	return $logLevel;
 	

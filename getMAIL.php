@@ -67,6 +67,8 @@ $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
 $RESPONSE_METHOD = urldecode($pluginSettings['RESPONSE_METHOD']);
 
 $LOG_LEVEL = getFPPLogLevel();
+logEntry("Log level in translated from fpp settings file: ".$LOG_LEVEL);
+
 if(urldecode($pluginSettings['DEBUG'] != "")) {
         $DEBUG=urldecode($pluginSettings['DEBUG']);
 }
