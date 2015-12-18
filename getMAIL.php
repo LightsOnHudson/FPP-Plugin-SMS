@@ -234,6 +234,7 @@ $i=0;
 		logEntry("updating message last download to: ".$messageTimestamp);
 		WriteSettingToFile("MAIL_LAST_TIMESTAMP",$messageTimestamp,$pluginName);
 		$GMAIL_ADDRESS = $overview[0]->from;
+		$GMAIL_ADDRESS = get_string_between($GMAIL_ADDRESS,"<",">");
 //		$from =  $overview[0]->from;
 		//echo "from: ".$from."\n";
 //		$from = get_string_between($from,"<",".");
@@ -401,6 +402,7 @@ $mail->isSMTP();
 $mail->SMTPDebug = 2;
 
 //Ask for HTML-friendly debug output
+if($DEBUG)
 $mail->Debugoutput = 'html';
 
 //Set the hostname of the mail server
@@ -425,7 +427,7 @@ $mail->Username = $EMAIL;
 $mail->Password = $PASSWORD;
 
 //Set who the message is to be sent from
-$mail->setFrom($PASSWORD, 'Holiday');
+$mail->setFrom($EMAIL, 'Holiday');
 
 //Set an alternative reply-to address
 $mail->addReplyTo($EMAIL, 'Holiday');
@@ -434,11 +436,11 @@ $mail->addReplyTo($EMAIL, 'Holiday');
 $mail->addAddress($to, $from);
 
 //Set the subject line
-$mail->Subject = $body;
+$mail->Subject = $subject;
 
 //Read an HTML message body from an external file, convert referenced images to embedded,
 //convert HTML into a basic plain-text alternative body
-//$mail->msgHTML(file_get_contents('contents.html'), dirname(__FILE__));
+$mail->msgHTML($body);
 
 //Replace the plain text body with one created manually
 $mail->AltBody = $body;
@@ -448,9 +450,9 @@ $mail->AltBody = $body;
 
 //send the message, check for errors
 if (!$mail->send()) {
-    echo "Mailer Error: " . $mail->ErrorInfo;
+    logEntry( "Mailer Error: " . $mail->ErrorInfo);
 } else {
-    echo "Message sent!";
+    logEntry( "Message sent!");
 }
 	
 }
