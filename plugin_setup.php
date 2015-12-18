@@ -333,7 +333,18 @@ echo "<input type=\"text\" name=\"API_KEY\" size=\"64\" value=\"".$API_KEY."\"> 
 
 $pluginMessages = getPluginMessages($pluginName, 0);
 
-print_r($pluginMessages);
+//print_r($pluginMessages);
+$messageCount = count($pluginMessages);
+
+
+
+echo "<textarea class=\"FormElement\" name=\"messages\" id=\"messages\" cols=\"40\" rows=\"".$messageCount."\">\n";
+for($i=0;$i<=$messageCount-1;$i++ ) {
+	
+	echo $pluginMessages[$i];
+}
+
+echo "</textarea> \n";
 
 
 
