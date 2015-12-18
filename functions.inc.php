@@ -13,7 +13,7 @@ function getFPPLogLevel() {
 	
 		logEntry("FPP Settings file: ".$FPP_LOG_LEVEL_FILE);
 		
-		$logLevelString = $FPP_SETTINGS_DATA['LogLevel'];
+		$logLevelString = trim($FPP_SETTINGS_DATA['LogLevel']);
 		logEntry("Log level in fpp settings file: ".$logLevelString);
 		
 		switch($logLevelString) {
