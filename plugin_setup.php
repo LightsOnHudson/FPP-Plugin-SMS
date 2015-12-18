@@ -331,54 +331,12 @@ echo "<input type=\"text\" name=\"API_KEY\" size=\"64\" value=\"".$API_KEY."\"> 
 
 
 <form method="post" action="http://<? echo $_SERVER['SERVER_NAME']?>/plugin.php?plugin=<?echo $pluginName;?>&page=messageManagement.php">
-<input id="submit_button" name="Message Management" type="submit" class="buttons" value="Message Management">
+<input id="MessageManagementButton" name="Message Management" type="submit" value="Message Management">
 </form>
 
-<?
-
-$pluginMessages = getPluginMessages($pluginName, 0);
-
-//print_r($pluginMessages);
-$messageCount = count($pluginMessages);
 
 
 
-//echo "<textarea class=\"FormElement\" name=\"messages\" id=\"messages\" cols=\"40\" rows=\"".$messageCount."\">\n";
-echo "<table cellspacing=\"3\" cellpadding=\"3\" border=\"1\"> \n";
-
-for($i=0;$i<=$messageCount-1;$i++ ) {
-
-	echo "<tr> \n";
-	
-	$messageQueueParts = explode("|",$pluginMessages[$i]);
-	
-	//unix timestamp
-	echo "<td> \n";
-	
-	echo date('d M Y H:i:s',$messageQueueParts[0]);
-	echo "</td> \n";
-	
-	echo "<td> \n";
-	//message data
-	echo urldecode($messageQueueParts[1]);
-	echo "</td> \n";
-	
-	//plugin Subscription
-	//echo "<td> \n";
-	
-	//echo $messageQueueParts[2];
-	//echo "</td> \n";
-	
-	echo "</tr> \n";
-	//echo $pluginMessages[$i];
-}
-
-echo "</table> \n";
-//echo "</textarea> \n";
-
-
-
-?>
 <p>To report a bug, please file it against the sms Control plugin project on Git:<? echo $gitURL;?> 
 </fieldset>
 </div>

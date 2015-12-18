@@ -39,6 +39,7 @@ $pluginMessages = getPluginMessages($pluginName, 0);
 $messageCount = count($pluginMessages);
 
 
+echo "<center><h1><b>".$pluginName." Message Management</b></h1></center> <br/> \n";
 
 //echo "<textarea class=\"FormElement\" name=\"messages\" id=\"messages\" cols=\"40\" rows=\"".$messageCount."\">\n";
 echo "<table cellspacing=\"3\" cellpadding=\"3\" border=\"1\"> \n";
