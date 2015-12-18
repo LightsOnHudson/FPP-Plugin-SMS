@@ -319,7 +319,7 @@ print_r($pluginMessages);
 
 
 
-?>?>
+?>
 <p>To report a bug, please file it against the sms Control plugin project on Git: https://github.com/LightsOnHudson/FPP-Plugin-SMS
 
 </fieldset>
