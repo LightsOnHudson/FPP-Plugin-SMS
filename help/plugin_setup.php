@@ -1,8 +1,3 @@
-<?php
-
-//added dec 18 plugin message management
-?>
-
 <b>SMS Control help</b>
 
 
