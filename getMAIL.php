@@ -110,6 +110,8 @@ if($DEBUG){
         logEntry("pass: ".$PASSWORD);
 }
 
+logEntry("Log Level: ".$LOG_LEVEL);
+
 $gv = new GoogleVoice($EMAIL, $PASSWORD);
 
 //$hostname = '{imap.gmail.com:993/imap/ssl}ALL';
