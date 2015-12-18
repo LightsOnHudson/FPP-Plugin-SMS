@@ -62,6 +62,7 @@ $API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
 $API_KEY = urldecode($pluginSettings['API_KEY']);
 $IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
 $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
+$RESPONSE_METHOD = urldecode($pluginSettings['RESPONSE_METHOD']);
 
 if(urldecode($pluginSettings['DEBUG'] != "")) {
         $DEBUG=urldecode($pluginSettings['DEBUG']);
@@ -285,9 +286,10 @@ $i=0;
                 } else {
                                 //generic message to display from control number just like a regular user
                                 processSMSMessage($from,$messageText);
-                               // $gv->sendSMS($from,$REPLY_TEXT);
                                 $subject="";
-                                sendMail($GMAIL_ADDRESS, $EMAIL, $subject, $REPLY_TEXT);
+                                sendResponse($from,$REPLY_TEXT,$GMAIL_ADDRESS,$subject);
+                                
+                             
                                 sleep(1);
 
                                 //processReadSentMessages();
@@ -301,9 +303,10 @@ $i=0;
                                 $MESSAGE_USED=true;
                                 logEntry($messageText. " is from a white listed number");
                                 processSMSMessage($from,$messageText);
-                                 // $gv->sendSMS($from,$REPLY_TEXT);
+                                 
                                 $subject="";
-                                sendMail($GMAIL_ADDRESS, $EMAIL, $subject, $REPLY_TEXT);
+                                
+                                sendResponse($from,$REPLY_TEXT,$GMAIL_ADDRESS,$subject);
                                 sleep(1);
 
         } else if(!$MESSAGE_USED){
@@ -319,7 +322,8 @@ $i=0;
                                         logEntry("Message: ".$messageText. " PASSED");
                                          // $gv->sendSMS($from,$REPLY_TEXT);
                                 $subject="";
-                                sendMail($GMAIL_ADDRESS, $EMAIL, $subject, $REPLY_TEXT);
+                             
+                                sendResponse($from,$REPLY_TEXT,$GMAIL_ADDRESS,$subject);
                                         processSMSMessage($from,$messageText);
                                         sleep(1);
 
@@ -328,8 +332,8 @@ $i=0;
                                         logEntry("message: ".$messageText." FAILED");
                                         $REPLY_TEXT = "Your message contains profanity, sorry. More messages like these will ban your phone number";
                                          // $gv->sendSMS($from,$REPLY_TEXT);
-                                $subject="";
-                                sendMail($GMAIL_ADDRESS, $EMAIL, $subject, $REPLY_TEXT);
+                               $subject="";
+                                sendResponse($from,$REPLY_TEXT,$GMAIL_ADDRESS,$subject);
                                 sleep(1);
 
                                 }
@@ -376,6 +380,28 @@ if($IMMEDIATE_OUTPUT != "on" && $IMMEDIATE_OUTPUT != "1") {
 
 lockHelper::unlock();
 
+
+//send response function 
+function sendResponse($from,$REPLY_TEXT,$GMAIL_ADDRESS,$subject) {
+	global $DEBUG, $gv, $EMAIL, $RESPONSE_METHOD;
+	
+	logEntry("Sending response using: ".$RESPONSE_METHOD);
+	
+	switch ($RESPONSE_METHOD) {
+		
+		case "SMS":
+			$gv->sendSMS($from,$REPLY_TEXT);
+			
+			break;
+			
+		case "EMAIL":
+			sendMail($GMAIL_ADDRESS, $EMAIL, $subject, $REPLY_TEXT);
+			break;
+	}
+	 
+	 
+	
+}
 //sendmail using phpmailer function
 function sendMail($to, $from, $subject, $body) {
 	global $DEBUG, $EMAIL, $PASSWORD;

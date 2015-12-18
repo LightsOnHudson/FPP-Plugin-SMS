@@ -60,6 +60,7 @@ if(isset($_POST['submit']))
 	WriteSettingToFile("API_KEY",urlencode($_POST["API_KEY"]),$pluginName);
 	WriteSettingToFile("IMMEDIATE_OUTPUT",urlencode($_POST["IMMEDIATE_OUTPUT"]),$pluginName);
 	WriteSettingToFile("MATRIX_LOCATION",urlencode($_POST["MATRIX_LOCATION"]),$pluginName);
+	WriteSettingToFile("RESPONSE_METHOD",urlencode($_POST["RESPONSE_METHOD"]),$pluginName);
 
 }
 
@@ -76,7 +77,7 @@ if(isset($_POST['submit']))
 	$API_KEY = urldecode($pluginSettings['API_KEY']);
 	$IMMEDIATE_OUTPUT = $pluginSettings['IMMEDIATE_OUTPUT'];
 	$MATRIX_LOCATION = $pluginSettings['MATRIX_LOCATION'];
-	
+	$RESPONSE_METHOD = $pluginSettings['RESPONSE_METHOD'];
 	$ENABLED = $pluginSettings['ENABLED'];
 
 if($REPLY_TEXT == "") {
@@ -232,6 +233,34 @@ echo "<input type=\"password\" name=\"PASSWORD\" size=\"16\" value=\"".$PASSWORD
 
 
 echo "<p/> \n";
+
+echo "Response method: \n";
+echo "<select name=\"RESPONSE_METHOD\"> \n";
+	if($RESPONSE_METHOD !="" ) {
+              switch ($RESPONSE_METHOD)
+				{
+					case "SMS":
+                                		echo "<option selected value=\"".$RESPONSE_METHOD."\">".$RESPONSE_METHOD."</option> \n";
+                                		echo "<option value=\"EMAIL\">EMAIL</option> \n";
+                                		break;
+					case "EMAIL":
+                                		echo "<option selected value=\"".$RESPONSE_METHOD."\">".$RESPONSE_METHOD."</option> \n";
+                                		echo "<option value=\"SMS\">SMS</option> \n";
+                        			break;
+			
+				
+	
+				}
+	
+			} else {
+
+                                echo "<option value=\"SMS\">SMS</option> \n";
+                                echo "<option value=\"EMAIL\">EMAIL</option> \n";
+			}
+               
+			echo "</select> \n";
+echo "<p/> \n";
+
 
 echo "Valid Commands: \n";
 
