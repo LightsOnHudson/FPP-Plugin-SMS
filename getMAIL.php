@@ -399,7 +399,12 @@ $mail->isSMTP();
 // 0 = off (for production use)
 // 1 = client messages
 // 2 = client and server messages
-$mail->SMTPDebug = 2;
+if($DEBUG) {
+	$mail->SMTPDebug = 2;
+	} else {
+
+	$mail->SMTPDebug = 0;
+}
 
 //Ask for HTML-friendly debug output
 if($DEBUG)
