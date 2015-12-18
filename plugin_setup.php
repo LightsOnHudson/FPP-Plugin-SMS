@@ -347,17 +347,23 @@ for($i=0;$i<=$messageCount-1;$i++ ) {
 	
 	$messageQueueParts = explode("|",$pluginMessages[$i]);
 	
+	//unix timestamp
 	echo "<td> \n";
-	echo $messageQueueParts[0];
+	
+	$date->setTimestamp($messageQueueParts[0]);
+	echo $date->format('U = Y-m-d H:i:s') . "\n";
 	echo "</td> \n";
 	
 	echo "<td> \n";
-	echo $messageQueueParts[1];
+	//message data
+	echo urldecode($messageQueueParts[1]);
 	echo "</td> \n";
 	
-	echo "<td> \n";
-	echo $messageQueueParts[2];
-	echo "</td> \n";
+	//plugin Subscription
+	//echo "<td> \n";
+	
+	//echo $messageQueueParts[2];
+	//echo "</td> \n";
 	
 	echo "</tr> \n";
 	//echo $pluginMessages[$i];
