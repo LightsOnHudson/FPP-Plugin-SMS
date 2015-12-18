@@ -1,5 +1,49 @@
 <?php
 
+//get the fpp log level
+function getFPPLogLevel() {
+	
+	$FPP_LOG_LEVEL_FILE = "/home/fpp/media/settings";
+	if (file_exists($FPP_LOG_LEVEL_FILE))
+		$FPP_SETTINGS_DATA = parse_ini_file($FPP_LOG_LEVEL_FILE);
+	
+		logEntry("FPP Settings file: ".$FPP_LOG_LEVEL_FILE);
+		
+		$logLevel = $FPP_SETTINGS_DATA['LogLevel'];
+		logEntry("Log level in fpp settings file: ".$logLevel);
+		
+		switch($logLevel) {
+			
+			
+			case "info":
+				$logLevel=0;
+				
+				break;
+				
+			case "warn":
+				$logLevel=1;
+				
+				break;
+				
+			case "debug":
+				
+				$logLevel=2;
+				
+				break;
+				
+			case "excess":
+				
+				$logLevel=3;
+				
+				break;
+				
+		}
+		
+		logEntry("Log level in translated from fpp settings file: ".$logLevel);
+	
+	return $logLevel;
+	
+}
 function processSMSMessage($from,$messageText) {
         global $pluginName,$MESSAGE_QUEUE_PLUGIN_ENABLED;
 

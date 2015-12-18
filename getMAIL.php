@@ -66,11 +66,7 @@ $IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
 $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
 $RESPONSE_METHOD = urldecode($pluginSettings['RESPONSE_METHOD']);
 
-if(urldecode($pluginSettings['LOG_LEVEL']) !="" ) {
-	
-	$LOG_LEVEL = urldecode($pluginSettings['LOG_LEVEL']);
-}
-
+$LOG_LEVEL = getFPPLogLevel();
 if(urldecode($pluginSettings['DEBUG'] != "")) {
         $DEBUG=urldecode($pluginSettings['DEBUG']);
 }
