@@ -329,6 +329,11 @@ echo "<input type=\"text\" name=\"API_KEY\" size=\"64\" value=\"".$API_KEY."\"> 
 ?>
 </form>
 
+
+<form method="post" action="http://<? echo $_SERVER['SERVER_NAME']?>/plugin.php?plugin=<?echo $pluginName;?>&page=messageManagement.php">
+<input id="submit_button" name="Message Management" type="submit" class="buttons" value="Message Management">
+</form>
+
 <?
 
 $pluginMessages = getPluginMessages($pluginName, 0);
