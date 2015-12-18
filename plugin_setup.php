@@ -25,7 +25,7 @@ $logFile = $settings['logDirectory']."/".$pluginName.".log";
 
 
 
-$messageQueuePluginPath = $pluginDirectory."/".$messageQueue_Plugin."/";
+$messageQueuePluginPath = $settings['pluginDirectory']."/".$messageQueue_Plugin."/";
 
 $messageQueueFile = urldecode(ReadSettingFromFile("MESSAGE_FILE",$messageQueue_Plugin));
 
