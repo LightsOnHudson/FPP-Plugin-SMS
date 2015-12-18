@@ -142,7 +142,7 @@ function forkExec($cmd) {
 		//logEntry("sleeping 5 seconds, processing, thensleeping agin");
 
 		exec($cmd);
-		lockHelper::unlock();
+		
 		return "Child";
 	}
 }
