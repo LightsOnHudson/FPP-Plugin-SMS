@@ -4,15 +4,19 @@
 function getFPPLogLevel() {
 	
 	$FPP_LOG_LEVEL_FILE = "/home/fpp/media/settings";
-	if (file_exists($FPP_LOG_LEVEL_FILE))
+	if (file_exists($FPP_LOG_LEVEL_FILE)) {
 		$FPP_SETTINGS_DATA = parse_ini_file($FPP_LOG_LEVEL_FILE);
+	} else {
+		//return log level 0
+		return 0;
+	}
 	
 		logEntry("FPP Settings file: ".$FPP_LOG_LEVEL_FILE);
 		
-		$logLevel = $FPP_SETTINGS_DATA['LogLevel'];
-		logEntry("Log level in fpp settings file: ".$logLevel);
+		$logLevelString = $FPP_SETTINGS_DATA['LogLevel'];
+		logEntry("Log level in fpp settings file: ".$logLevelString);
 		
-		switch($logLevel) {
+		switch($logLevelString) {
 			
 			
 			case "info":
