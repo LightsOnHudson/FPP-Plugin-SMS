@@ -1,5 +1,82 @@
 <?php
 
+
+//fork a non blocking fppd process
+
+function forkExec($cmd) {
+	global $DEBUG;
+
+	
+	//$safe_arg["arg_2"] = escapeshellarg($arg_2);
+	$pid = pcntl_fork();
+
+	if ( $pid == -1 ) {
+		// Fork failed
+		if($DEBUG)
+			logEntry("fork failed");
+
+			exit(1);
+	} else if ( $pid ) {
+		// We are the parent
+		if($DEBUG) {
+			logEntry("------------");
+			logEntry("fork parent");
+			logEntry("------------");
+		}
+		return "Parent";
+
+		// Can no longer use $db because it will be closed by the child
+		// Instead, make a new MySQL connection for ourselves to work with
+	} else {
+		if($DEBUG){
+			logEntry("------------");
+			logEntry("fork child");
+			logEntry("------------");
+		}
+		//logEntry("sleeping 5 seconds, processing, thensleeping agin");
+
+		exec($cmd);
+		return "Child";
+	}
+}
+//fork a non blocking fppd process
+
+function fork($argv) {
+	global $DEBUG;
+
+	$safe_arg = escapeshellarg($argv[4]);
+	//$safe_arg["arg_2"] = escapeshellarg($arg_2);
+	$pid = pcntl_fork();
+
+	if ( $pid == -1 ) {
+		// Fork failed
+		if($DEBUG)
+			logEntry("fork failed");
+
+			exit(1);
+	} else if ( $pid ) {
+		// We are the parent
+		if($DEBUG) {
+			logEntry("------------");
+			logEntry("fork parent");
+			logEntry("------------");
+		}
+		return "Parent";
+
+		// Can no longer use $db because it will be closed by the child
+		// Instead, make a new MySQL connection for ourselves to work with
+	} else {
+		if($DEBUG){
+			logEntry("------------");
+			logEntry("fork child");
+			logEntry("------------");
+		}
+		//logEntry("sleeping 5 seconds, processing, thensleeping agin");
+
+		processCallback($argv);
+		return "Child";
+	}
+}
 //get the string between two characters
 function get_string_between ($str,$from,$to) {
 

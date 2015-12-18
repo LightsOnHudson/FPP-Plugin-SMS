@@ -370,11 +370,20 @@ if($IMMEDIATE_OUTPUT != "on" && $IMMEDIATE_OUTPUT != "1") {
 	if($MATRIX_LOCATION != "127.0.0.1") {
 		$remoteCMD = "/usr/bin/curl -s --basic 'http://".$MATRIX_LOCATION."/plugin.php?plugin=".$MATRIX_MESSAGE_PLUGIN_NAME."&page=".$MATRIX_EXEC_PAGE_NAME."&nopage=1' > /dev/null";
 		logEntry("REMOTE MATRIX TRIGGER: ".$remoteCMD);
-		exec($remoteCMD);
+		
+		$forkResult = forkExec($remoteCMD);
+		if($DEBUG)
+			logEntry("DEBUG: Fork Result: ".$forkResult);
+		
+		//exec($remoteCMD);
 	} else {
 		$IMMEDIATE_CMD = $settings['pluginDirectory']."/".$MATRIX_MESSAGE_PLUGIN_NAME."/matrix.php";
 		logEntry("LOCAL command: ".$IMMEDIATE_CMD);
-		exec($IMMEDIATE_CMD);
+		$forkResult = forkExec($IMMEDIATE_CMD);
+		if($DEBUG)
+			logEntry("DEBUG: Fork Result: ".$forkResult);
+		
+		//exec($IMMEDIATE_CMD);
 	}
 }
 
