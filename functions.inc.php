@@ -22,24 +22,28 @@ function getFPPLogLevel() {
 			case "info":
 				$logLevel=0;
 				
-				break;
+			//	break;
 				
 			case "warn":
 				$logLevel=1;
 				
-				break;
+			//	break;
 				
 			case "debug":
 				
 				$logLevel=2;
 				
-				break;
+			//	break;
 				
 			case "excess":
 				
 				$logLevel=3;
 				
-				break;
+				//break;
+				
+			 default:
+				$logLevel = 0;
+				
 				
 		}
 		
