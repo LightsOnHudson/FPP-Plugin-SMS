@@ -338,13 +338,33 @@ $messageCount = count($pluginMessages);
 
 
 
-echo "<textarea class=\"FormElement\" name=\"messages\" id=\"messages\" cols=\"40\" rows=\"".$messageCount."\">\n";
+//echo "<textarea class=\"FormElement\" name=\"messages\" id=\"messages\" cols=\"40\" rows=\"".$messageCount."\">\n";
+echo "<table cellspacing=\"3\" cellpadding=\"3\" border=\"1\"> \n";
+
 for($i=0;$i<=$messageCount-1;$i++ ) {
+
+	echo "<tr> \n";
 	
-	echo $pluginMessages[$i];
+	$messageQueueParts = explode("|",$pluginMessageQueue[$messageIndex]);
+	
+	echo "<td> \n";
+	echo $messageQueueParts[0];
+	echo "</td> \n";
+	
+	echo "<td> \n";
+	echo $messageQueueParts[1];
+	echo "</td> \n";
+	
+	echo "<td> \n";
+	echo $messageQueueParts[2];
+	echo "</td> \n";
+	
+	echo "</tr> \n";
+	//echo $pluginMessages[$i];
 }
 
-echo "</textarea> \n";
+echo "</table> \n";
+//echo "</textarea> \n";
 
 
 
