@@ -321,7 +321,8 @@ $i=0;
                                 //not from a white listed or a control number so just a regular user
                                 //need to check for profanity
                                 //profanity checker API
-                               $profanityCheck = check_for_profanity_neutrinoapi($messageText);
+                              // $profanityCheck = check_for_profanity_neutrinoapi($messageText);
+                               $profanityCheck = check_for_profanity_WebPurify($message);
 
                                 //returns a list of array,
                                if(!$profanityCheck) {
