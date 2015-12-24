@@ -322,7 +322,7 @@ $i=0;
                                 //need to check for profanity
                                 //profanity checker API
                               // $profanityCheck = check_for_profanity_neutrinoapi($messageText);
-                               $profanityCheck = check_for_profanity_WebPurify($message);
+                               $profanityCheck = check_for_profanity_WebPurify($messageText);
 
                                 //returns a list of array,
                                if(!$profanityCheck) {

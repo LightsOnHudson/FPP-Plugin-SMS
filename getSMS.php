@@ -203,7 +203,7 @@ for($i=0;$i<=count($messageQueue)-1;$i++) {
 				//need to check for profanity
 				//profanity checker API
 				//$profanityCheck = check_for_profanity_neutrinoapi($messageText);
-				$profanityCheck = check_for_profanity_WebPurify($message);
+				$profanityCheck = check_for_profanity_WebPurify($messageText);
 				//$profanityCheck = profanityChecker($messageText);
 				
 				//if(!$profanityCheck) {
