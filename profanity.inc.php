@@ -11,8 +11,28 @@ function curl_post_request($url, $data)
 	return $content;
 }
 
+//function uses WebPurify
+function check_for_profanity_WebPurify($message) {
+	global $DEBUG,$pluginSettings,$API_USER_ID, $API_KEY;
+	
+	$checkurl = "http://api1.webpurify.com/services/rest/?method=webpurify.live.check&api_key=".$API_KEY."&text=".urlencode($message);
+	
+	if($DEBUG)
+		logEntry("Inside Web Purify profanity checker");
+	
+
+	$response = simplexml_load_file($checkurl,'SimpleXMLElement', LIBXML_NOCDATA);
+
+	if($DEBUG)
+		print_r($response);
+	
+	if($DEBUG)
+	echo $response->found;
+}
+
 //function to check if it is profanity
-function check_for_profanity($message) {
+//this uses function: https://neutrinoapi.com/bad-word-filter
+function check_for_profanity_neutrinoapi($message) {
 global $DEBUG,$pluginSettings,$API_USER_ID, $API_KEY;
 
 	if($DEBUG)
@@ -44,7 +64,13 @@ logEntry("is bad: ".$result['is-bad']);
 logEntry("is bad total: ".$result['bad-words-total']);
 //echo print_r($result['bad-words-list'])."\n";
 logEntry("censored content: ".$result['censored-content']);
-return $result;
+
+if($result['is-bad']>0 || $result['bad-words-total'] > 0)
+	return true;
+else {
+	return false;
+}
+
 }
 
 //basic checker only single words

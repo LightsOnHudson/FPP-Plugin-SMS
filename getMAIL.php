@@ -321,10 +321,10 @@ $i=0;
                                 //not from a white listed or a control number so just a regular user
                                 //need to check for profanity
                                 //profanity checker API
-                                $profanityCheck = check_for_profanity($messageText);
+                               $profanityCheck = check_for_profanity_neutrinoapi($messageText);
 
                                 //returns a list of array,
-                                if($profanityCheck['is-bad'] == 0 && $profanityCheck['bad-words-total'] == 0) {
+                               if(!$profanityCheck) {
 
                                         logEntry("Message: ".$messageText. " PASSED");
                                          // $gv->sendSMS($from,$REPLY_TEXT);
