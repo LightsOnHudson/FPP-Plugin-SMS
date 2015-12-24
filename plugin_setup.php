@@ -334,12 +334,16 @@ echo "<select name=\"PROFANITY_ENGINE\"> \n";
                                 		echo "<option selected value=\"".$PROFANITY_ENGINE."\">".$RESPONSE_METHOD."</option> \n";
                                 		echo "<option value=\"WEBPURIFY\">WEBPURIFY</option> \n";
                                 		break;
+                                		
 					case "WEBPURIFY":
                                 		echo "<option selected value=\"".$PROFANITY_ENGINE."\">".$RESPONSE_METHOD."</option> \n";
                                 		echo "<option value=\"NEUTRINO\">NEUTRINO</option> \n";
                         			break;
 			
-				
+					default:
+						echo "<option value=\"NEUTRINO\">NEUTRINO</option> \n";
+						echo "<option value=\"WEBPURIFY\">WEBPURIFY</option> \n";
+							break;
 	
 				}
 	
