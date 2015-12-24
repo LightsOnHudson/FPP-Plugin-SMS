@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?
 //error_reporting(0);
+//
 
 $pluginName ="SMS";
 $myPid = getmypid();
