@@ -331,12 +331,12 @@ echo "<select name=\"PROFANITY_ENGINE\"> \n";
               switch ($PROFANITY_ENGINE)
 				{
 					case "NEUTRINO":
-                                		echo "<option selected value=\"".$PROFANITY_ENGINE."\">".$RESPONSE_METHOD."</option> \n";
+                                		echo "<option selected value=\"".$PROFANITY_ENGINE."\">".$PROFANITY_ENGINE."</option> \n";
                                 		echo "<option value=\"WEBPURIFY\">WEBPURIFY</option> \n";
                                 		break;
                                 		
 					case "WEBPURIFY":
-                                		echo "<option selected value=\"".$PROFANITY_ENGINE."\">".$RESPONSE_METHOD."</option> \n";
+                                		echo "<option selected value=\"".$PROFANITY_ENGINE."\">".$PROFANITY_ENGINE."</option> \n";
                                 		echo "<option value=\"NEUTRINO\">NEUTRINO</option> \n";
                         			break;
 			
