@@ -59,6 +59,7 @@ $IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
 $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
 $API_KEY = urldecode($pluginSettings['API_KEY']);
 $API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
+$PROFANITY_ENGINE = urldecode($pluginSettings['PROFANITY_ENGINE']);
 
 if(urldecode($pluginSettings['DEBUG'] != "")) {
 	$DEBUG=urldecode($pluginSettings['DEBUG']);
@@ -203,8 +204,23 @@ for($i=0;$i<=count($messageQueue)-1;$i++) {
 				//not from a white listed or a control number so just a regular user
 				//need to check for profanity
 				//profanity checker API
+				switch($PROFANITY_ENGINE) {
+					
+					case "NEUTRINO":
+						$profanityCheck = check_for_profanity_neutrinoapi($messageText);
+						break;
+						
+					case "WEBPURIFY":
+						$profanityCheck = check_for_profanity_WebPurify($messageText);
+						break;
+						
+					default:
+						//default turn off profanity check
+						$profanityCheck == false;
+						break;
+				}
 				//$profanityCheck = check_for_profanity_neutrinoapi($messageText);
-				$profanityCheck = check_for_profanity_WebPurify($messageText);
+				//$profanityCheck = check_for_profanity_WebPurify($messageText);
 				//$profanityCheck = profanityChecker($messageText);
 				
 				//if(!$profanityCheck) {

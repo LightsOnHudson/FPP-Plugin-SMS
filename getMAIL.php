@@ -65,6 +65,7 @@ $API_KEY = urldecode($pluginSettings['API_KEY']);
 $IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
 $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
 $RESPONSE_METHOD = urldecode($pluginSettings['RESPONSE_METHOD']);
+$PROFANITY_ENGINE = urldecode($pluginSettings['PROFANITY_ENGINE']);
 
 $LOG_LEVEL = getFPPLogLevel();
 logEntry("Log level in translated from fpp settings file: ".$LOG_LEVEL);
@@ -322,8 +323,21 @@ $i=0;
                                 //need to check for profanity
                                 //profanity checker API
                               // $profanityCheck = check_for_profanity_neutrinoapi($messageText);
-                               $profanityCheck = check_for_profanity_WebPurify($messageText);
-
+        			switch($PROFANITY_ENGINE) {
+					
+					case "NEUTRINO":
+						$profanityCheck = check_for_profanity_neutrinoapi($messageText);
+						break;
+						
+					case "WEBPURIFY":
+						$profanityCheck = check_for_profanity_WebPurify($messageText);
+						break;
+						
+					default:
+						//default turn off profanity check
+						$profanityCheck == false;
+						break;
+				}
                                 //returns a list of array,
                                if(!$profanityCheck) {
 

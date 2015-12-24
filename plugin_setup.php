@@ -79,7 +79,7 @@ if(isset($_POST['submit']))
 	WriteSettingToFile("IMMEDIATE_OUTPUT",urlencode($_POST["IMMEDIATE_OUTPUT"]),$pluginName);
 	WriteSettingToFile("MATRIX_LOCATION",urlencode($_POST["MATRIX_LOCATION"]),$pluginName);
 	WriteSettingToFile("RESPONSE_METHOD",urlencode($_POST["RESPONSE_METHOD"]),$pluginName);
-
+	WriteSettingToFile("PROFANITY_ENGINE",urlencode($_POST["PROFANITY_ENGINE"]),$pluginName);
 }
 
 	
@@ -97,6 +97,7 @@ if(isset($_POST['submit']))
 	$MATRIX_LOCATION = $pluginSettings['MATRIX_LOCATION'];
 	$RESPONSE_METHOD = $pluginSettings['RESPONSE_METHOD'];
 	$ENABLED = $pluginSettings['ENABLED'];
+	$PROFANITY_ENGINE = urldecode($pluginSettings['PROFANITY_ENGINE']);
 
 if($REPLY_TEXT == "") {
 	$REPLY_TEXT = "Thank you for your message, it has been added to the Queue";
@@ -318,6 +319,34 @@ echo "Profanity API KEY: \n";
 echo "<input type=\"text\" name=\"API_KEY\" size=\"64\" value=\"".$API_KEY."\"> \n";
 
 ?>
+echo "<p/> \n";
+
+echo "Profanity Engine: \n";
+echo "<select name=\"PROFANITY_ENGINE\"> \n";
+	if($PROFANITY_ENGINE !="" ) {
+              switch ($PROFANITY_ENGINE)
+				{
+					case "NEUTRINO":
+                                		echo "<option selected value=\"".$RESPONSE_METHOD."\">".$RESPONSE_METHOD."</option> \n";
+                                		echo "<option value=\"WEBPURIFY\">WEBPURIFY</option> \n";
+                                		break;
+					case "WEBPURIFY":
+                                		echo "<option selected value=\"".$RESPONSE_METHOD."\">".$RESPONSE_METHOD."</option> \n";
+                                		echo "<option value=\"NEUTRINO\">NEUTRINO</option> \n";
+                        			break;
+			
+				
+	
+				}
+	
+			} else {
+
+                                echo "<option value=\"NEUTRINO\">NEUTRINO</option> \n";
+                                echo "<option value=\"WEBPURIFY\">WEBPURIFY</option> \n";
+			}
+               
+			echo "</select> \n";
+echo "<p/> \n";
 <p/>
 <input id="submit_button" name="submit" type="submit" class="buttons" value="Save Config">
 <?
