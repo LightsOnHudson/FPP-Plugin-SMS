@@ -98,6 +98,10 @@ if(isset($_POST['submit']))
 	$RESPONSE_METHOD = $pluginSettings['RESPONSE_METHOD'];
 	$ENABLED = $pluginSettings['ENABLED'];
 	$PROFANITY_ENGINE = urldecode($pluginSettings['PROFANITY_ENGINE']);
+	$DEBUG = urldecode($pluginSettings['DEBUG']);
+	
+	if($DEBUG)
+		print_r($pluginSettings);
 
 if($REPLY_TEXT == "") {
 	$REPLY_TEXT = "Thank you for your message, it has been added to the Queue";
