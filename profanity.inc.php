@@ -29,8 +29,16 @@ function check_for_profanity_WebPurify($message) {
 	if($DEBUG)
 		print_r($response);
 	
-	if($DEBUG)
-	echo $response->found;
+	//if($DEBUG)
+	//echo $response->found;
+	
+	if($response->found != 0) {
+		return true;
+	} else {
+		return false;
+	}
+	
+	//return $response->found;
 }
 
 //function to check if it is profanity
