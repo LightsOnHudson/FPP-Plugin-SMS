@@ -17,9 +17,12 @@ function check_for_profanity_WebPurify($message) {
 	
 	$checkurl = "http://api1.webpurify.com/services/rest/?method=webpurify.live.check&api_key=".$API_KEY."&text=".urlencode($message);
 	
+	
 	if($DEBUG)
 		logEntry("Inside Web Purify profanity checker");
 	
+	if($DEBUG)
+		logEntry("Checkurl: ".$checkurl);
 
 	$response = simplexml_load_file($checkurl,'SimpleXMLElement', LIBXML_NOCDATA);
 
