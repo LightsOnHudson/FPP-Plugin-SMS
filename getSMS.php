@@ -56,6 +56,8 @@ $REPLY_TEXT = urldecode($pluginSettings['REPLY_TEXT']);
 $VALID_COMMANDS = urldecode($pluginSettings['VALID_COMMANDS']);
 $IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
 $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
+$API_KEY = urldecode($pluginSettings['API_KEY']);
+$API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
 
 if(urldecode($pluginSettings['DEBUG'] != "")) {
 	$DEBUG=urldecode($pluginSettings['DEBUG']);
