@@ -318,7 +318,7 @@ echo "Profanity API KEY: \n";
 
 echo "<input type=\"text\" name=\"API_KEY\" size=\"64\" value=\"".$API_KEY."\"> \n";
 
-?>
+
 echo "<p/> \n";
 
 echo "Profanity Engine: \n";
@@ -347,6 +347,7 @@ echo "<select name=\"PROFANITY_ENGINE\"> \n";
                
 			echo "</select> \n";
 echo "<p/> \n";
+?>
 <p/>
 <input id="submit_button" name="submit" type="submit" class="buttons" value="Save Config">
 <?
