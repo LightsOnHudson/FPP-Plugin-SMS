@@ -331,7 +331,6 @@ function processReadSentMessages() {
 	$readMessageCount=0;
 	
 	foreach($smsRead as $s) {
-		//	logEntry("Erasing Message: ".$readMessageCount);
 		logEntry("Erasing Message from: ".$s->phoneNumber." on ".$s->displayStartDateTime.": ".$s->messageText);
 		if(!in_array($s->id, $readmsgIDs)) {
 		$readMessageCount++;

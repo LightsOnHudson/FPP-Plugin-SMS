@@ -41,7 +41,7 @@ if(file_exists($messageQueuePluginPath."functions.inc.php"))
 require ("lock.helper.php");
 
 define('LOCK_DIR', '/tmp/');
-define('LOCK_SUFFIX', '.lock');
+define('LOCK_SUFFIX', $pluginName.'.lock');
 
 $pluginConfigFile = $settings['configDirectory'] . "/plugin." .$pluginName;
 if (file_exists($pluginConfigFile))
@@ -65,7 +65,9 @@ $API_KEY = urldecode($pluginSettings['API_KEY']);
 $IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
 $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
 $RESPONSE_METHOD = urldecode($pluginSettings['RESPONSE_METHOD']);
-
+$PROFANITY_ENGINE = urldecode($pluginSettings['PROFANITY_ENGINE']);
+$IMAP_DELETE= urldecode($pluginSettings['IMAP_DELETE']);
+$ENABLED= urldecode($pluginSettings['ENABLED']);
 $LOG_LEVEL = getFPPLogLevel();
 logEntry("Log level in translated from fpp settings file: ".$LOG_LEVEL);
 
@@ -90,9 +92,6 @@ print_r($COMMAND_ARRAY);
 //give google voice time to sleep
 $GVSleepTime = 5;
 
-$ENABLED="";
-
-$ENABLED = trim(urldecode(ReadSettingFromFile("ENABLED",$pluginName)));
 
 
 
@@ -101,7 +100,7 @@ if(($pid = lockHelper::lock()) === FALSE) {
 
 }
 
-if($ENABLED != "on" && $ENABLED != "1") {
+if($ENABLED != "ON" && $ENABLED != "1") {
         logEntry("Plugin Status: DISABLED Please enable in Plugin Setup to use & Restart FPPD Daemon");
         lockHelper::unlock();
         exit(0);
@@ -253,7 +252,16 @@ $i=0;
 //		$from = substr($from,1);
 		logEntry( "from: ".$from);
 
-	 $status = imap_setflag_full($mbox, $mailUID, "\\Seen \\Flagged", ST_UID);
+	 //$status = imap_setflag_full($mbox, $mailUID, "\\Seen \\Flagged", ST_UID);
+
+if($IMAP_DELETE) {
+	logEntry("Deleting imap message: ".$email_number);
+	imap_delete($mbox, $email_number); 
+	sleep(2);
+	imap_expunge($mbox);
+	sleep(2);
+}
+
  $MESSAGE_USED=false;
         $messageText = $message;
 
@@ -321,10 +329,24 @@ $i=0;
                                 //not from a white listed or a control number so just a regular user
                                 //need to check for profanity
                                 //profanity checker API
-                                $profanityCheck = check_for_profanity($messageText);
-
+                              // $profanityCheck = check_for_profanity_neutrinoapi($messageText);
+        			switch($PROFANITY_ENGINE) {
+					
+					case "NEUTRINO":
+						$profanityCheck = check_for_profanity_neutrinoapi($messageText);
+						break;
+						
+					case "WEBPURIFY":
+						$profanityCheck = check_for_profanity_WebPurify($messageText);
+						break;
+						
+					default:
+						//default turn off profanity check
+						$profanityCheck == false;
+						break;
+				}
                                 //returns a list of array,
-                                if($profanityCheck['is-bad'] == 0 && $profanityCheck['bad-words-total'] == 0) {
+                               if(!$profanityCheck) {
 
                                         logEntry("Message: ".$messageText. " PASSED");
                                          // $gv->sendSMS($from,$REPLY_TEXT);
@@ -338,7 +360,6 @@ $i=0;
                                 	$subject="";
                                         logEntry("message: ".$messageText." FAILED");
                                         $REPLY_TEXT = "Your message contains profanity, sorry. More messages like these will ban your phone number";
-                                         // $gv->sendSMS($from,$REPLY_TEXT);
                                $subject="";
                                 sendResponse($from,$REPLY_TEXT,$GMAIL_ADDRESS,$subject);
                                 sleep(1);
@@ -396,7 +417,7 @@ if($IMMEDIATE_OUTPUT != "on" && $IMMEDIATE_OUTPUT != "1") {
 	}
 }
 
-lockHelper::unlock();
+//lockHelper::unlock();
 
 
 

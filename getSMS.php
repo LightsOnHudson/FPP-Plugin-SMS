@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?
-//error_reporting(0);
+error_reporting(0);
+//
 
 $pluginName ="SMS";
 $myPid = getmypid();
@@ -37,7 +38,7 @@ if(file_exists($messageQueuePluginPath."functions.inc.php"))
 require ("lock.helper.php");
 
 define('LOCK_DIR', '/tmp/');
-define('LOCK_SUFFIX', '.lock');
+define('LOCK_SUFFIX', $pluginName.'.lock');
 
 $pluginConfigFile = $settings['configDirectory'] . "/plugin." .$pluginName;
 if (file_exists($pluginConfigFile))
@@ -56,6 +57,11 @@ $REPLY_TEXT = urldecode($pluginSettings['REPLY_TEXT']);
 $VALID_COMMANDS = urldecode($pluginSettings['VALID_COMMANDS']);
 $IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
 $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
+$API_KEY = urldecode($pluginSettings['API_KEY']);
+$API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
+$PROFANITY_ENGINE = urldecode($pluginSettings['PROFANITY_ENGINE']);
+
+$ENABLED = urldecode($pluginSettings['ENABLED']);
 
 if(urldecode($pluginSettings['DEBUG'] != "")) {
 	$DEBUG=urldecode($pluginSettings['DEBUG']);
@@ -78,9 +84,7 @@ print_r($COMMAND_ARRAY);
 //give google voice time to sleep
 $GVSleepTime = 5;
 
-$ENABLED="";
 
-$ENABLED = trim(urldecode(ReadSettingFromFile("ENABLED",$pluginName)));
 
 
 
@@ -94,7 +98,7 @@ if(($pid = lockHelper::lock()) === FALSE) {
 //echo "Enabled: ".$ENABLED."<br/> \n";
 
 
-if($ENABLED != "on" && $ENABLED != "1") {
+if($ENABLED != "ON" && $ENABLED != "1") {
 	logEntry("Plugin Status: DISABLED Please enable in Plugin Setup to use & Restart FPPD Daemon");
 	lockHelper::unlock();	
 	exit(0);
@@ -200,23 +204,34 @@ for($i=0;$i<=count($messageQueue)-1;$i++) {
 				//not from a white listed or a control number so just a regular user
 				//need to check for profanity
 				//profanity checker API
-				$profanityCheck = check_for_profanity($messageText);
-				//$profanityCheck = profanityChecker($messageText);
-				
-				//if(!$profanityCheck) {
-				//returns a list of array, 
-				if($profanityCheck['is-bad'] == 0 && $profanityCheck['bad-words-total'] == 0) {
+				switch($PROFANITY_ENGINE) {
+					
+					case "NEUTRINO":
+						$profanityCheck = check_for_profanity_neutrinoapi($messageText);
+						break;
+						
+					case "WEBPURIFY":
+						$profanityCheck = check_for_profanity_WebPurify($messageText);
+						break;
+						
+					default:
+						//default turn off profanity check
+						$profanityCheck == false;
+						break;
+				}
+				if(!$profanityCheck) {
 				
 					logEntry("Message: ".$messageText. " PASSED");
 					$gv->sendSMS($from,$REPLY_TEXT);
-					//$gv->sendSMS($from,"Thank you for your message, it has been added to the queue");
 					processSMSMessage($from,$messageText);
 					sleep(1);	
 					processReadSentMessages();	
 
 				} else {
 					logEntry("message: ".$messageText." FAILED");
-					$gv->sendSMS($from,"Your message contains profanity, sorry. More messages like these will ban your phone number");
+					$REPLY_TEXT = "Your message contains Profanity, Sorry. More messages like this will ban your phone number";
+
+					$gv->sendSMS($from,$REPLY_TEXT);
 					sleep(1);
 					processReadSentMessages();
 
@@ -245,6 +260,6 @@ for($i=0;$i<=count($messageQueue)-1;$i++) {
 		}
 
 
-lockHelper::unlock();
+//lockHelper::unlock();
 
 ?>
