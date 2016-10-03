@@ -1,6 +1,10 @@
 #!/usr/bin/php
 <?
+<<<<<<< HEAD
 error_reporting(0);
+=======
+//error_reporting(0);
+>>>>>>> origin/master
 //
 
 $pluginName ="SMS";
@@ -60,8 +64,11 @@ $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
 $API_KEY = urldecode($pluginSettings['API_KEY']);
 $API_USER_ID = urldecode($pluginSettings['API_USER_ID']);
 $PROFANITY_ENGINE = urldecode($pluginSettings['PROFANITY_ENGINE']);
+<<<<<<< HEAD
 
 $ENABLED = urldecode($pluginSettings['ENABLED']);
+=======
+>>>>>>> origin/master
 
 if(urldecode($pluginSettings['DEBUG'] != "")) {
 	$DEBUG=urldecode($pluginSettings['DEBUG']);
@@ -219,6 +226,15 @@ for($i=0;$i<=count($messageQueue)-1;$i++) {
 						$profanityCheck == false;
 						break;
 				}
+<<<<<<< HEAD
+=======
+				//$profanityCheck = check_for_profanity_neutrinoapi($messageText);
+				//$profanityCheck = check_for_profanity_WebPurify($messageText);
+				//$profanityCheck = profanityChecker($messageText);
+				
+				//if(!$profanityCheck) {
+				//returns a list of array, 
+>>>>>>> origin/master
 				if(!$profanityCheck) {
 				
 					logEntry("Message: ".$messageText. " PASSED");

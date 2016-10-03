@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-error_reporting(0);
+//error_reporting(0);
 
 $pluginName ="SMS";
 $myPid = getmypid();
@@ -66,8 +66,12 @@ $IMMEDIATE_OUTPUT = urldecode($pluginSettings['IMMEDIATE_OUTPUT']);
 $MATRIX_LOCATION = urldecode($pluginSettings['MATRIX_LOCATION']);
 $RESPONSE_METHOD = urldecode($pluginSettings['RESPONSE_METHOD']);
 $PROFANITY_ENGINE = urldecode($pluginSettings['PROFANITY_ENGINE']);
+<<<<<<< HEAD
 $IMAP_DELETE= urldecode($pluginSettings['IMAP_DELETE']);
 $ENABLED= urldecode($pluginSettings['ENABLED']);
+=======
+
+>>>>>>> origin/master
 $LOG_LEVEL = getFPPLogLevel();
 logEntry("Log level in translated from fpp settings file: ".$LOG_LEVEL);
 

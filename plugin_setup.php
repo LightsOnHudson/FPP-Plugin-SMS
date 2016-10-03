@@ -96,7 +96,11 @@ if(isset($_POST['submit']))
 	$IMMEDIATE_OUTPUT = $pluginSettings['IMMEDIATE_OUTPUT'];
 	$MATRIX_LOCATION = $pluginSettings['MATRIX_LOCATION'];
 	$RESPONSE_METHOD = $pluginSettings['RESPONSE_METHOD'];
+<<<<<<< HEAD
 	$ENABLED = urldecode($pluginSettings['ENABLED']);
+=======
+	$ENABLED = $pluginSettings['ENABLED'];
+>>>>>>> origin/master
 	$PROFANITY_ENGINE = urldecode($pluginSettings['PROFANITY_ENGINE']);
 	$DEBUG = urldecode($pluginSettings['DEBUG']);
 	
@@ -180,7 +184,7 @@ if($VALID_COMMANDS == "") {
 </ul>
 
 
-<form method="post" action="http://<? echo $_SERVER['SERVER_NAME']?>/plugin.php?plugin=<?echo $pluginName;?>&page=plugin_setup.php">
+<form method="post" action="http://<? echo $_SERVER['SERVER_ADDR']?>/plugin.php?plugin=<?echo $pluginName;?>&page=plugin_setup.php">
 
 
 <?
@@ -368,7 +372,7 @@ echo "<p/> \n";
 </form>
 
 
-<form method="post" action="http://<? echo $_SERVER['SERVER_NAME']?>/plugin.php?plugin=<?echo $pluginName;?>&page=messageManagement.php">
+<form method="post" action="http://<? echo $_SERVER['SERVER_ADDR']?>/plugin.php?plugin=<?echo $pluginName;?>&page=messageManagement.php">
 <input id="MessageManagementButton" name="Message Management" type="submit" value="Message Management">
 </form>
 
